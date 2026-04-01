@@ -1,5 +1,4 @@
 .env
 node_modules/
 node_modules
-abcd-5e28f-firebase-adminsdk-fbsvc-21adaf8c1c.json
 serviceAccountKey.json
