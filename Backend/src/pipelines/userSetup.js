@@ -1,4 +1,4 @@
-const base = require("../config/Airtable");
+const base = require("./config/Airtable");
 
 const USERS_TABLE = "Users";
 
