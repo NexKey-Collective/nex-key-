@@ -1,42 +1,43 @@
-const base = require("./config/Airtable");
-
-const USERS_TABLE = "Users";
+const userService = require("../services/userService");
+const buyBoxService = require("../services/buyBoxService");
 
 const userSetup = async (firebaseUser) => {
   const { uid, email, name } = firebaseUser;
 
-  // Check if user already exists in Airtable
-  const existing = await base(USERS_TABLE)
-    .select({
-      filterByFormula: `{firebaseUid} = '${uid}'`,
-      maxRecords: 1,
-    })
-    .firstPage();
+  // Check by firebaseUid first
+  let user = await userService.findByFirebaseUid(uid);
 
-  if (existing.length > 0) {
-    const record = existing[0];
-    return {
-      id: record.id,
-      ...record.fields,
-    };
+  // Fallback: check by email
+  if (!user && email) {
+    user = await userService.findByEmail(email);
   }
 
-  // Create new user
-  const newRecord = await base(USERS_TABLE).create([
-    {
-      fields: {
-        firebaseUid: uid,
-        email: email || "",
-        name: name || "",
-        role: "investor", // default role
-      },
-    },
-  ]);
+  // Create if doesn't exist
+  if (!user) {
+    user = await userService.createUser({ uid, email, name });
+  }
 
-  const created = newRecord[0];
+  // Check if there's an existing BuyBox submission for this email
+  // If so, link it to the user
+  let hasBuyBox = false;
+
+  if (email) {
+    const buyBox = await buyBoxService.findByEmail(email);
+    if (buyBox && !buyBox.userId) {
+      await buyBoxService.linkUser(buyBox.id, user.id);
+      hasBuyBox = true;
+    } else if (buyBox && buyBox.userId) {
+      hasBuyBox = true;
+    }
+  }
+
   return {
-    id: created.id,
-    ...created.fields,
+    id: user.id,
+    firebaseUid: user.firebaseUid,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    hasBuyBox,
   };
 };
 
