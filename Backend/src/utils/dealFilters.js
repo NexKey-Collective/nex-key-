@@ -1,44 +1,22 @@
 function parseDealFilters(query) {
   const filters = {};
 
-  if (query.dealType) {
-    filters.dealType = query.dealType;
-  }
+  if (query.dealType) filters.dealType = query.dealType;
+  if (query.state) filters.state = query.state;
+  if (query.city) filters.city = query.city;
+  if (query.minBeds) filters.minBeds = parseInt(query.minBeds, 10);
+  if (query.minBaths) filters.minBaths = parseInt(query.minBaths, 10);
+  if (query.minEntryFee) filters.minEntryFee = parseFloat(query.minEntryFee);
+  if (query.maxEntryFee) filters.maxEntryFee = parseFloat(query.maxEntryFee);
+  if (query.furnished) filters.furnished = query.furnished;
+  if (query.hasPool) filters.hasPool = query.hasPool;
+  if (query.multiUnit) filters.multiUnit = query.multiUnit;
+  if (query.monthlyMin) filters.monthlyMin = parseFloat(query.monthlyMin);
+  if (query.monthlyMax) filters.monthlyMax = parseFloat(query.monthlyMax);
 
-  if (query.state) {
-    filters.state = query.state;
-  }
-
-  if (query.city) {
-    filters.city = query.city;
-  }
-
-  if (query.minBeds) {
-    filters.minBeds = parseInt(query.minBeds, 10);
-  }
-
-  if (query.minBaths) {
-    filters.minBaths = parseInt(query.minBaths, 10);
-  }
-
-  if (query.minEntryFee) {
-    filters.minEntryFee = parseFloat(query.minEntryFee);
-  }
-
-  if (query.maxEntryFee) {
-    filters.maxEntryFee = parseFloat(query.maxEntryFee);
-  }
-
-  if (query.furnished) {
-    filters.furnished = query.furnished;
-  }
-
-  if (query.hasPool) {
-    filters.hasPool = query.hasPool;
-  }
-
-  if (query.multiUnit) {
-    filters.multiUnit = query.multiUnit;
+  const exitStrategies = query["exitStrategies[]"];
+  if (exitStrategies) {
+    filters.exitStrategies = Array.isArray(exitStrategies) ? exitStrategies : [exitStrategies];
   }
 
   return filters;

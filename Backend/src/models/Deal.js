@@ -26,6 +26,8 @@ const DealFields = {
   METRO_AREA: "Metro Area",
   PUBLISH_TO_WEBSITE: "Publish to Website",
   DEAL_ADDED_DATE: "Deal Added Date",
+  POSSIBLE_EXIT_STRATEGIES: "Possible Exit Strategies", // multi-select
+  WEBSITE_TAGS: "Website Tags",
 };
 
 function formatDeal(record) {
@@ -53,8 +55,11 @@ function formatDeal(record) {
     listingImageUrl: record.fields[DealFields.LISTING_IMAGE_URL] || "",
     googleDriveStorage: record.fields[DealFields.GOOGLE_DRIVE_STORAGE] || "",
     zipCode: record.fields[DealFields.ZIP_CODE] || "",
+    metroArea: record.fields[DealFields.METRO_AREA] || "",
     publishToWebsite: record.fields[DealFields.PUBLISH_TO_WEBSITE] || false,
     dealAddedDate: record.fields[DealFields.DEAL_ADDED_DATE] || "",
+    exitStrategies: record.fields[DealFields.POSSIBLE_EXIT_STRATEGIES] || [], // array
+    websiteTags: record.fields[DealFields.WEBSITE_TAGS] || [], // array
   };
 }
 

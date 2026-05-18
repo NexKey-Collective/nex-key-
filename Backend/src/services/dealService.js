@@ -22,6 +22,10 @@ async function getDealsWithFilters(filters) {
     formulas.push(`{${DealFields.STATE}} = '${filters.state}'`);
   }
 
+  if (filters.city) {
+    formulas.push(`{${DealFields.CITY}} = '${filters.city}'`);
+  }
+
   if (filters.minBeds) {
     formulas.push(`VALUE({${DealFields.BED_COUNT}}) >= ${filters.minBeds}`);
   }
@@ -30,12 +34,12 @@ async function getDealsWithFilters(filters) {
     formulas.push(`VALUE({${DealFields.BATH_COUNT}}) >= ${filters.minBaths}`);
   }
 
-  if (filters.maxEntryFee) {
-    formulas.push(`{${DealFields.ENTRY_FEE}} <= ${filters.maxEntryFee}`);
-  }
-
   if (filters.minEntryFee) {
     formulas.push(`{${DealFields.ENTRY_FEE}} >= ${filters.minEntryFee}`);
+  }
+
+  if (filters.maxEntryFee) {
+    formulas.push(`{${DealFields.ENTRY_FEE}} <= ${filters.maxEntryFee}`);
   }
 
   if (filters.furnished) {
@@ -50,17 +54,25 @@ async function getDealsWithFilters(filters) {
     formulas.push(`{${DealFields.MULTI_UNIT}} = '${filters.multiUnit}'`);
   }
 
-  if (filters.city) {
-    formulas.push(`{${DealFields.CITY}} = '${filters.city}'`);
+  if (filters.monthlyMin) {
+    formulas.push(`{${DealFields.TOTAL_MONTHLY_PAYMENT}} >= ${filters.monthlyMin}`);
   }
 
-  const filterFormula =
-    formulas.length > 0 ? `AND(${formulas.join(", ")})` : "";
+  if (filters.monthlyMax) {
+    formulas.push(`{${DealFields.TOTAL_MONTHLY_PAYMENT}} <= ${filters.monthlyMax}`);
+  }
 
+  if (filters.exitStrategies && filters.exitStrategies.length > 0) {
+    const exitFormulas = filters.exitStrategies.map(
+      (strategy) =>
+        `FIND('${strategy}', ARRAYJOIN({${DealFields.POSSIBLE_EXIT_STRATEGIES}}, ','))`
+    );
+    formulas.push(`OR(${exitFormulas.join(", ")})`);
+  }
+
+  const filterFormula = formulas.length > 0 ? `AND(${formulas.join(", ")})` : "";
   const selectOptions = {};
-  if (filterFormula) {
-    selectOptions.filterByFormula = filterFormula;
-  }
+  if (filterFormula) selectOptions.filterByFormula = filterFormula;
 
   const records = await base(DEALS_TABLE).select(selectOptions).all();
   return records.map(formatDeal);
@@ -78,10 +90,7 @@ async function searchDeals(query) {
     FIND("${searchTerm}", LOWER({${DealFields.DEAL_TYPE}}))
   )`;
 
-  const records = await base(DEALS_TABLE)
-    .select({ filterByFormula: filterFormula })
-    .all();
-
+  const records = await base(DEALS_TABLE).select({ filterByFormula: filterFormula }).all();
   return records.map(formatDeal);
 }
 

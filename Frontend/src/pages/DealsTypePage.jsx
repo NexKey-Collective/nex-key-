@@ -1,158 +1,128 @@
-import { useState, useMemo } from 'react'
-import DealsTypeHeader from '../components/deals/DealsTypeHeader'
-import DealsTypeGrid from '../components/deals/DealsTypeGrid'
+import { useState, useEffect, useMemo } from "react";
+import DealsTypeHeader from "../components/deals/DealsTypeHeader";
+import DealsTypeGrid from "../components/deals/DealsTypeGrid";
+import { getDeals } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
-const ALL_DEALS = [
-  {
-    id: 1,
-    image: 'https://www.figma.com/api/mcp/asset/271b3ab7-9474-40b0-8772-f59882c257ca',
-    badge: null,
-    price: '$425,000',
-    address: '2847 Maple Grove Drive',
-    city: 'Austin, TX',
-    beds: '4',
-    baths: '3',
-    sqft: '2,450 sqft',
-    statLabel: 'ARV',
-    statValue: '$580,000',
-    type: 'Fix & Flip',
-  },
-  {
-    id: 2,
-    image: 'https://www.figma.com/api/mcp/asset/f5a8a085-27dc-4fd6-93f1-0dd1c7a1e600',
-    badge: null,
-    price: '$385,000',
-    address: '1523 Ocean View Boulevard',
-    city: 'Miami, FL',
-    beds: '3',
-    baths: '2.5',
-    sqft: '1,850 sqft',
-    statLabel: 'Monthly Rev',
-    statValue: '$6,800',
-    type: 'STR',
-  },
-  {
-    id: 3,
-    image: 'https://www.figma.com/api/mcp/asset/55d47ed3-7757-4717-b003-f9eb8402ced9',
-    badge: null,
-    price: '$295,000',
-    address: '4192 Summit Ridge Lane',
-    city: 'Denver, CO',
-    beds: '3',
-    baths: '2',
-    sqft: '1,650 sqft',
-    statLabel: 'Equity',
-    statValue: '$85,000',
-    type: 'Wholesale',
-  },
-  {
-    id: 4,
-    image: 'https://www.figma.com/api/mcp/asset/5cf25eb9-c749-4369-a651-c3ea0715175c',
-    badge: null,
-    price: '$475,000',
-    address: '8634 Parkside Avenue',
-    city: 'Seattle, WA',
-    beds: '5',
-    baths: '3.5',
-    sqft: '3,200 sqft',
-    statLabel: 'Rooms',
-    statValue: '6',
-    type: 'Co-Living',
-  },
-  {
-    id: 5,
-    image: 'https://www.figma.com/api/mcp/asset/84260035-ad37-4c27-ac19-24d37a99537a',
-    badge: null,
-    price: '$520,000',
-    address: '5721 Riverside Terrace',
-    city: 'Portland, OR',
-    beds: '4',
-    baths: '3',
-    sqft: '2,850 sqft',
-    statLabel: 'Monthly',
-    statValue: '$4,200',
-    type: 'MTR',
-  },
-  {
-    id: 6,
-    image: 'https://www.figma.com/api/mcp/asset/c5c43d74-3b1b-4293-ba52-5a55a227973f',
-    badge: null,
-    price: '$625,000',
-    address: '3298 Sunset Hills Court',
-    city: 'Phoenix, AZ',
-    beds: '4',
-    baths: '4',
-    sqft: '3,450 sqft',
-    statLabel: 'Discount',
-    statValue: '15%',
-    type: 'Cash',
-  },
-  {
-    id: 7,
-    image: 'https://www.figma.com/api/mcp/asset/c2155f83-d269-4f3d-9ca1-e8276e0d2f00',
-    badge: 'Seller Finance',
-    price: '$340,000',
-    address: '9145 Heritage Oak Drive',
-    city: 'Nashville, TN',
-    beds: '3',
-    baths: '2',
-    sqft: '1,920 sqft',
-    statLabel: 'Down',
-    statValue: '20%',
-    type: 'Seller Finance',
-  },
-  {
-    id: 8,
-    image: 'https://www.figma.com/api/mcp/asset/80448209-0068-497b-bb73-d598f8163097',
-    badge: 'MTR',
-    price: '$410,000',
-    address: '6782 Mountain View Circle',
-    city: 'Salt Lake City, UT',
-    beds: '4',
-    baths: '2.5',
-    sqft: '2,200 sqft',
-    statLabel: 'Monthly',
-    statValue: '$3,800',
-    type: 'MTR',
-  },
-  {
-    id: 9,
-    image: 'https://www.figma.com/api/mcp/asset/a67306f1-a8e3-4240-bd45-f5eb0f39fcdf',
-    badge: 'Lease Purchase',
-    price: '$365,000',
-    address: '2456 Garden Gate Lane',
-    city: 'Charlotte, NC',
-    beds: '3',
-    baths: '2.5',
-    sqft: '2,050 sqft',
-    statLabel: 'Equity',
-    statValue: '$72,000',
-    type: 'Lease Purchase',
-  },
-]
+const CREATIVE_SUBTYPES = ["Subto", "Hybrid", "Seller Finance"];
+
+const DEFAULT_PANEL_FILTERS = {
+  dealTypes: [],
+  exitStrategies: [],
+  monthlyMin: 0,
+  monthlyMax: 5000,
+  furnished: "any",
+  pool: "any",
+  multiUnit: "any",
+};
 
 export default function DealsTypePage() {
-  const [activeFilter, setActiveFilter] = useState('All Deals')
-  const [searchQuery, setSearchQuery] = useState('')
+  const { logout } = useAuth();
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredDeals = useMemo(() => {
-    let deals = ALL_DEALS
+  // Inline header filters (beds, baths, entry fee, rate)
+  const [inlineFilters, setInlineFilters] = useState({});
 
-    if (activeFilter !== 'All Deals') {
-      deals = deals.filter((d) => d.type === activeFilter || d.badge === activeFilter)
-    }
+  // Panel filters — lifted up so state persists across open/close
+  const [panelFilters, setPanelFilters] = useState(DEFAULT_PANEL_FILTERS);
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      deals = deals.filter(
-        (d) =>
-          d.address.toLowerCase().includes(q) ||
-          d.city.toLowerCase().includes(q)
-      )
-    }
+  // Applied panel filters — only update when user hits "Apply"
+  const [appliedPanelFilters, setAppliedPanelFilters] = useState({});
 
-    return deals
-  }, [activeFilter, searchQuery])
+  const activeFilterCount = Object.keys(appliedPanelFilters).length;
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const filters = { ...inlineFilters, ...appliedPanelFilters };
+
+        if (searchQuery.trim()) {
+          filters.q = searchQuery.trim();
+        } else if (activeFilter === "Cash") {
+          filters.dealType = "Cash";
+        } else if (activeFilter === "Novation") {
+          filters.dealType = "Novation";
+        } else if (activeFilter === "Rent To Own") {
+          filters.dealType = "Rent To Own";
+        } else if (activeFilter === "Stack") {
+          filters.dealType = "Stack";
+        }
+
+        const data = await getDeals(filters);
+        let results = data.deals || [];
+
+        // Client-side: Creative tab
+        if (activeFilter === "Creative" && !searchQuery.trim()) {
+          results = results.filter((d) => CREATIVE_SUBTYPES.includes(d.dealType));
+        }
+
+        // Client-side: filter by deal types from panel
+        if (filters.dealTypes && filters.dealTypes.length > 0) {
+          results = results.filter((deal) =>
+            filters.dealTypes.includes(deal.dealType)
+          );
+        }
+
+        // Client-side: filter by exit strategies
+        if (filters.exitStrategies && filters.exitStrategies.length > 0) {
+          results = results.filter((deal) =>
+            deal.exitStrategies?.some((es) => filters.exitStrategies.includes(es))
+          );
+        }
+
+        // Client-side: filter by monthly payment range
+        if (filters.monthlyMin > 0 || filters.monthlyMax < 5000) {
+          results = results.filter((deal) => {
+            if (!deal.totalMonthlyPayment) return false;
+            if (filters.monthlyMin && deal.totalMonthlyPayment < filters.monthlyMin) return false;
+            if (filters.monthlyMax && deal.totalMonthlyPayment > filters.monthlyMax) return false;
+            return true;
+          });
+        }
+
+        setDeals(results);
+      } catch (err) {
+        console.error("Failed to fetch deals:", err);
+        setError("Failed to load deals. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timer = setTimeout(fetchDeals, searchQuery ? 400 : 0);
+    return () => clearTimeout(timer);
+  }, [activeFilter, searchQuery, inlineFilters, appliedPanelFilters]);
+
+  const handleApplyPanel = (filters) => {
+    setAppliedPanelFilters(filters);
+  };
+
+  const formattedDeals = useMemo(() => {
+    return deals.map((deal) => ({
+      id: deal.id,
+      image: deal.listingImageUrl || "https://placehold.co/400x300?text=No+Image",
+      badge: deal.dealType || null,
+      exitStrategies: deal.exitStrategies || [],
+      websiteTags: deal.websiteTags || [],
+      price: deal.entryFee ? `$${deal.entryFee.toLocaleString()}` : "Contact",
+      address: deal.address || deal.fullAddress || "Address unavailable",
+      city: `${deal.city || ""}${deal.city && deal.state ? ", " : ""}${deal.state || ""}`,
+      beds: deal.bedCount || "-",
+      baths: deal.bathCount || "-",
+      sqft: "-",
+      statLabel: "Monthly",
+      statValue: deal.totalMonthlyPayment
+        ? `$${deal.totalMonthlyPayment.toLocaleString()}`
+        : "-",
+    }));
+  }, [deals]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -161,8 +131,25 @@ export default function DealsTypePage() {
         onFilterChange={setActiveFilter}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onLogout={logout}
+        onInlineFilters={setInlineFilters}
+        onApplyPanel={handleApplyPanel}
+        panelFilters={panelFilters}
+        onPanelFiltersChange={setPanelFilters}
+        activeFilterCount={activeFilterCount}
       />
-      <DealsTypeGrid deals={filteredDeals} />
+
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-8 h-8 border-4 border-[#ff5a5f] border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center py-24">
+          <p className="text-red-500 text-[16px]">{error}</p>
+        </div>
+      ) : (
+        <DealsTypeGrid deals={formattedDeals} />
+      )}
     </div>
-  )
+  );
 }
