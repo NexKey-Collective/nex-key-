@@ -1,3 +1,5 @@
 {
-  "rootDirectory": "Backend"
+  "rootDirectory": "Backend",
+  "buildCommand": "npm ci",
+  "startCommand": "npm start"
 }
