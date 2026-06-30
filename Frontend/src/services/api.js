@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://nex-key-production.up.railway.app/api";
 
 async function getAuthHeaders() {
   const { auth } = await import("../config/firebase");
