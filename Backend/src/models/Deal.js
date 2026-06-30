@@ -52,7 +52,9 @@ function formatDeal(record) {
     multiUnit: record.fields[DealFields.MULTI_UNIT] || "",
     hasPool: record.fields[DealFields.HAS_POOL] || "",
     hoaRestrictions: record.fields[DealFields.HOA_RESTRICTIONS] || "",
-    listingImageUrl: record.fields[DealFields.LISTING_IMAGE_URL] || "",
+    listingImageUrl: Array.isArray(record.fields[DealFields.LISTING_IMAGE_URL])
+      ? record.fields[DealFields.LISTING_IMAGE_URL][0]?.url || ""
+      : record.fields[DealFields.LISTING_IMAGE_URL] || "",
     googleDriveStorage: record.fields[DealFields.GOOGLE_DRIVE_STORAGE] || "",
     zipCode: record.fields[DealFields.ZIP_CODE] || "",
     metroArea: record.fields[DealFields.METRO_AREA] || "",
