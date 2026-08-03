@@ -1,6 +1,8 @@
 const matchingService = require("../services/matchingService");
 const userBuyBoxService = require("../services/userBuyBoxService");
 const dealService = require("../services/dealService");
+const matchSettingsService = require("../services/matchSettingsService");
+const matchPersistenceService = require("../services/matchPersistenceService");
 
 const getMatchedDeals = async (req, res) => {
   try {
@@ -17,13 +19,22 @@ const getMatchedDeals = async (req, res) => {
       });
     }
 
+    // Layer in per-buyer scoring overrides (weights, zip/radius) on top of the
+    // GHL-sourced Buy Box, without touching the Airtable record itself.
+    const matchSettings = await matchSettingsService.getSettings(userId);
+    const scoringBuyBox = {
+      ...buyBox,
+      zipCode: matchSettings?.zipCode,
+      radiusMiles: matchSettings?.radiusMiles,
+    };
+    const weights = matchSettings?.weights;
+
     // Get all deals
     const allDeals = await dealService.getAllDeals();
 
     // Calculate scores for each deal
     const scoredDeals = allDeals.map((deal) => {
-      const score = matchingService.calculateMatchScore(deal, buyBox);
-      const reasons = matchingService.getMatchReasons(deal, buyBox);
+      const { score, reasons } = matchingService.evaluateMatch(deal, scoringBuyBox, weights);
 
       return {
         ...deal,
@@ -33,15 +44,26 @@ const getMatchedDeals = async (req, res) => {
       };
     });
 
+    // Capture the previous "last viewed" baseline before we update it below.
+    const lastViewedAt = await matchPersistenceService.getLastViewedAt(userId);
+    const isNewMatchByDealId = await matchPersistenceService.syncMatchRecords(
+      userId,
+      scoredDeals,
+      lastViewedAt
+    );
+    await matchPersistenceService.markMatchesViewed(userId);
+
     // Filter only matched deals and sort by score descending
     const matchedDeals = scoredDeals
       .filter((d) => d.isMatched)
+      .map((d) => ({ ...d, isNewMatch: Boolean(isNewMatchByDealId[d.id]) }))
       .sort((a, b) => b.matchScore - a.matchScore);
 
     // Calculate statistics
     const statistics = {
       totalMatched: matchedDeals.length,
       totalDealsChecked: allDeals.length,
+      newMatchesCount: matchedDeals.filter((d) => d.isNewMatch).length,
       averageScore:
         matchedDeals.length > 0
           ? Math.round(
@@ -78,6 +100,14 @@ const getMatchScore = async (req, res) => {
       });
     }
 
+    const matchSettings = await matchSettingsService.getSettings(userId);
+    const scoringBuyBox = {
+      ...buyBox,
+      zipCode: matchSettings?.zipCode,
+      radiusMiles: matchSettings?.radiusMiles,
+    };
+    const weights = matchSettings?.weights;
+
     // Get specific deal
     const deal = await dealService.getDealById(dealId);
 
@@ -86,8 +116,7 @@ const getMatchScore = async (req, res) => {
     }
 
     // Calculate score and reasons
-    const score = matchingService.calculateMatchScore(deal, buyBox);
-    const reasons = matchingService.getMatchReasons(deal, buyBox);
+    const { score, reasons } = matchingService.evaluateMatch(deal, scoringBuyBox, weights);
 
     return res.status(200).json({
       deal,
