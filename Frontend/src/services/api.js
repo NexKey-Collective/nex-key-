@@ -11,6 +11,17 @@ async function getAuthHeaders() {
   };
 }
 
+async function getOptionalAuthHeaders() {
+  const { auth } = await import("../config/firebase");
+  const user = auth.currentUser;
+  if (!user) return { "Content-Type": "application/json" };
+  const token = await user.getIdToken();
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+
 export async function syncUser() {
   const headers = await getAuthHeaders();
   const res = await fetch(`${API_URL}/auth/sync`, { method: "POST", headers });
@@ -19,7 +30,7 @@ export async function syncUser() {
 }
 
 export async function getDeals(filters = {}) {
-  const headers = await getAuthHeaders();
+  const headers = await getOptionalAuthHeaders();
   const params = new URLSearchParams();
 
   if (filters.q) params.set("q", filters.q);
@@ -49,7 +60,7 @@ export async function getDeals(filters = {}) {
 }
 
 export async function getDealById(id) {
-  const headers = await getAuthHeaders();
+  const headers = await getOptionalAuthHeaders();
   const res = await fetch(`${API_URL}/deals/${id}`, { headers });
   if (!res.ok) throw new Error("Failed to fetch deal");
   return res.json();

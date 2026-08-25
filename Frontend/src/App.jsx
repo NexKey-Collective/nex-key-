@@ -16,22 +16,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/deals"
-            element={
-              <ProtectedRoute>
-                <DealsTypePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/deals/:id"
-            element={
-              <ProtectedRoute>
-                <DealDetailPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/deals" element={<DealsTypePage />} />
+          <Route path="/deals/:id" element={<DealDetailPage />} />
           <Route
             path="/map"
             element={

@@ -17,7 +17,7 @@ const DEFAULT_PANEL_FILTERS = {
 };
 
 export default function DealsTypePage() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -131,7 +131,7 @@ export default function DealsTypePage() {
         onFilterChange={setActiveFilter}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onLogout={logout}
+        onLogout={user ? logout : undefined}
         onInlineFilters={setInlineFilters}
         onApplyPanel={handleApplyPanel}
         panelFilters={panelFilters}
