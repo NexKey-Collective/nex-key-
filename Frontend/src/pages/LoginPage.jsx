@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+const PITCH_CHECKLIST = [
+  "Personalized match scores",
+  "Save deals to your workspace",
+  "Create custom Buy Boxes",
+  "Connect directly with sellers",
+];
 
 export default function LoginPage() {
   const { loginWithEmail, signupWithEmail, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const formRef = useRef(null);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,9 +53,89 @@ export default function LoginPage() {
     }
   };
 
+  const goToForm = (signup) => {
+    setIsSignup(signup);
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   return (
-    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-lg border border-black/[0.08] w-full max-w-md p-8">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-8 items-stretch">
+        {/* Pitch card */}
+        <div className="bg-white rounded-2xl shadow-lg border border-black/[0.08] p-8 flex flex-col justify-center">
+          <p
+            className="text-[#ff5a5f] text-[13px] font-bold uppercase tracking-wide mb-3"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Free NexKey account
+          </p>
+
+          <h2
+            className="text-[26px] font-bold text-[#1a1a1a] tracking-tight leading-tight mb-4"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Unlock the full NexKey experience
+          </h2>
+
+          <p
+            className="text-[15px] text-[#717171] leading-relaxed mb-7"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Create a free NexKey account to unlock personalized recommendations,
+            save deals, create Buy Boxes, and connect with sellers.
+          </p>
+
+          <div className="flex flex-col gap-3.5 mb-8">
+            {PITCH_CHECKLIST.map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <span className="w-6 h-6 bg-[#ff5a5f]/10 rounded-full flex items-center justify-center shrink-0">
+                  <svg
+                    className="w-3.5 h-3.5 text-[#ff5a5f]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </span>
+                <span
+                  className="text-[15px] text-[#1a1a1a]"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => goToForm(true)}
+              className="flex-1 bg-[#ff5a5f] text-white text-[15px] font-bold py-3 rounded-xl shadow-[0_4px_6px_rgba(255,90,95,0.25)] hover:bg-[#e0484d] transition-all duration-200 active:scale-95"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Sign Up
+            </button>
+            <button
+              onClick={() => goToForm(false)}
+              className="flex-1 bg-white border border-black/[0.10] text-[#1a1a1a] text-[15px] font-medium py-3 rounded-xl hover:bg-[#f7f7f7] transition-all"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Log In
+            </button>
+          </div>
+        </div>
+
+        {/* Auth form card */}
+        <div
+          ref={formRef}
+          className="bg-white rounded-2xl shadow-lg border border-black/[0.08] w-full p-8"
+        >
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <div className="w-12 h-12 flex items-center justify-center">
@@ -166,6 +254,7 @@ export default function LoginPage() {
             {isSignup ? "Sign In" : "Sign Up"}
           </button>
         </p>
+        </div>
       </div>
     </div>
   );
