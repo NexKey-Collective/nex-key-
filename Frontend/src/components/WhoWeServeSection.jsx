@@ -6,13 +6,8 @@ const audiences = [
       </svg>
     ),
     title: 'Investors',
-    desc: 'Simplify your portfolio growth in one place with no traditional bank financing required. Access off-market deals that match your exact investment strategy.',
-    items: [
-      'No traditional bank financing required',
-      'Work with your existing investment strategies',
-      'Collaborative process development',
-      'Streamlined portfolio management',
-    ],
+    desc: 'Build a passive portfolio with vetted, cash-flowing properties and full underwriting support.',
+    items: ['Curated deal flow', 'Hands-off management', 'Quarterly returns'],
   },
   {
     icon: (
@@ -21,13 +16,8 @@ const audiences = [
       </svg>
     ),
     title: 'Wholesalers',
-    desc: 'You bring deals, we get buyers. Get timely feedback, access to qualified buyers, and professional support to close deals faster.',
-    items: [
-      'Fast deal evaluation and feedback',
-      'Direct access to qualified buyers',
-      'Real-time progress tracking',
-      'Professional negotiation assistance',
-    ],
+    desc: 'Move contracts faster with a buyer network of 5,000+ active, pre-qualified investors.',
+    items: ['Instant buyer match', 'Escrow handling', 'Marketing tools'],
   },
   {
     icon: (
@@ -35,14 +25,9 @@ const audiences = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
-    title: 'Connectors',
-    desc: 'The first site to embrace connectors! Spread the love and earn rewards for every deal you help bring together in our network.',
-    items: [
-      'Pioneer connector-friendly platform',
-      'Connect buyers with opportunities',
-      'Earn commissions on referrals',
-      'Build your network value',
-    ],
+    title: 'Agents',
+    desc: 'Bring investment clients deals that close, and earn on every transaction in the network.',
+    items: ['Referral splits', 'Co-branded deals', 'Priority listings'],
   },
 ]
 
@@ -52,10 +37,8 @@ export default function WhoWeServeSection() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-[36px] font-bold text-dark tracking-tight">Who We Serve</h2>
-          <p className="text-text-muted text-[16px] mt-4 leading-relaxed">
-            Seasoned investors and home buyers alike can benefit from our platform. Discover how NexKey works for your specific role.
-          </p>
+          <p className="text-brand text-[14px] font-bold uppercase tracking-wide mb-3">Who We Serve</p>
+          <h2 className="text-[36px] font-bold text-dark tracking-tight">Built for everyone in the deal</h2>
         </div>
 
         {/* Cards */}
@@ -71,8 +54,8 @@ export default function WhoWeServeSection() {
               </div>
               <ul className="flex flex-col gap-2 mt-1">
                 {a.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[14px] text-text-body">
-                    <span className="mt-2 w-1.5 h-1.5 bg-brand rounded-full shrink-0" />
+                  <li key={item} className="flex items-center gap-3 text-[14px] text-text-body">
+                    <span className="w-1.5 h-1.5 bg-brand rounded-full shrink-0" />
                     {item}
                   </li>
                 ))}

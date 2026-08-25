@@ -1,11 +1,14 @@
 import Header from '../components/Header'
 import HeroSection from '../components/HeroSection'
-import FeaturedSection from '../components/FeaturedSection'
-import WhyChooseSection from '../components/WhyChooseSection'
 import AboutSection from '../components/AboutSection'
+import WhyChooseSection from '../components/WhyChooseSection'
 import WhoWeServeSection from '../components/WhoWeServeSection'
+import HowItWorksSection from '../components/HowItWorksSection'
 import PartnerSection from '../components/PartnerSection'
-import AffiliatesSection from '../components/AffiliatesSection'
+import TestimonialsSection from '../components/TestimonialsSection'
+import StatsSection from '../components/StatsSection'
+import FAQSection from '../components/FAQSection'
+import ContactSection from '../components/ContactSection'
 import CTASection from '../components/CTASection'
 import Footer from '../components/Footer'
 
@@ -15,12 +18,15 @@ export default function LandingPage() {
       <Header />
       <main>
         <HeroSection />
-        <FeaturedSection />
-        <WhyChooseSection />
         <AboutSection />
+        <WhyChooseSection />
         <WhoWeServeSection />
+        <HowItWorksSection />
         <PartnerSection />
-        <AffiliatesSection />
+        <TestimonialsSection />
+        <StatsSection />
+        <FAQSection />
+        <ContactSection />
         <CTASection />
       </main>
       <Footer />

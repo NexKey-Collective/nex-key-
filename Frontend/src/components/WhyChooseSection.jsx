@@ -5,8 +5,8 @@ const features = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
-    title: 'Vetted Opportunities',
-    desc: 'Every property undergoes rigorous due diligence, market analysis, and financial modeling before it reaches our platform. Only the best deals make it through.',
+    title: 'Off-Market Access',
+    desc: 'Exclusive deals you won\'t find on the MLS, sourced through our nationwide acquisition network.',
   },
   {
     icon: (
@@ -15,7 +15,7 @@ const features = [
       </svg>
     ),
     title: 'Creative Financing',
-    desc: 'Access innovative financing structures including seller financing, lease options, subject-to deals, and more — opening doors traditional lenders won\'t.',
+    desc: 'Seller financing, subject-to, and partnership structures tailored to your investment goals.',
   },
   {
     icon: (
@@ -24,7 +24,7 @@ const features = [
       </svg>
     ),
     title: 'Data-Driven Insights',
-    desc: 'Make informed decisions with comprehensive market analytics, comparable sales data, neighborhood trends, and projected return calculations on every listing.',
+    desc: 'Underwriting, comps, and ROI projections on every deal so you invest with confidence.',
   },
 ]
 
@@ -34,10 +34,10 @@ export default function WhyChooseSection() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-[36px] font-bold text-dark tracking-tight">Why Choose NexKey</h2>
-          <p className="text-text-muted text-[16px] mt-4 leading-relaxed">
-            We combine technology, expertise, and exclusive deal flow to give you an unmatched edge in real estate investing.
-          </p>
+          <p className="text-brand text-[14px] font-bold uppercase tracking-wide mb-3">Why Choose NexKey</p>
+          <h2 className="text-[36px] font-bold text-dark tracking-tight">
+            Everything you need to invest with confidence
+          </h2>
         </div>
 
         {/* Cards */}
