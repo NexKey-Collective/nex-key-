@@ -65,3 +65,50 @@ export async function getDealById(id) {
   if (!res.ok) throw new Error("Failed to fetch deal");
   return res.json();
 }
+
+export async function getBuyBox() {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/buyers/buybox`, { headers });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("Failed to fetch buy box");
+  const data = await res.json();
+  return data.buyBox;
+}
+
+export async function saveBuyBox(buyBox, exists) {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/buyers/buybox`, {
+    method: exists ? "PUT" : "POST",
+    headers,
+    body: JSON.stringify(buyBox),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to save buy box");
+  }
+  const data = await res.json();
+  return data.buyBox;
+}
+
+export async function getMatchSettings() {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/buyers/match-settings`, { headers });
+  if (!res.ok) throw new Error("Failed to fetch match settings");
+  const data = await res.json();
+  return data.settings;
+}
+
+export async function saveMatchSettings(settings) {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}/buyers/match-settings`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(settings),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || "Failed to save match settings");
+  }
+  const data = await res.json();
+  return data.settings;
+}

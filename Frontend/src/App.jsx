@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import DealsTypePage from "./pages/DealsTypePage";
 import DealDetailPage from "./pages/DealDetailPage";
 import MapPage from "./pages/MapPage";
+import MyBuyBoxPage from "./pages/MyBuyBoxPage";
 
 export default function App() {
   return (
@@ -23,6 +24,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <MapPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-buy-box"
+            element={
+              <ProtectedRoute>
+                <MyBuyBoxPage />
               </ProtectedRoute>
             }
           />
