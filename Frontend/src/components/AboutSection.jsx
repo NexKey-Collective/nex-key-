@@ -9,7 +9,7 @@ const checklist = [
 
 export default function AboutSection() {
   return (
-    <section id="about" className="bg-white py-20 px-6">
+    <section id="about" className="bg-white py-20 px-6 scroll-mt-24">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Left: Image */}
         <img

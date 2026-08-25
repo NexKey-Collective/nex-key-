@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import HeroSection from '../components/HeroSection'
 import AboutSection from '../components/AboutSection'
 import WhyChooseSection from '../components/WhyChooseSection'
@@ -12,6 +14,14 @@ import CTASection from '../components/CTASection'
 import Footer from '../components/Footer'
 
 export default function LandingPage() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (!location.hash) return
+    const el = document.querySelector(location.hash)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [location])
+
   return (
     <div className="min-h-screen">
       <main>
