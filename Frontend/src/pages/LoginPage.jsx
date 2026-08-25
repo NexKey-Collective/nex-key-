@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -12,8 +12,8 @@ const PITCH_CHECKLIST = [
 export default function LoginPage() {
   const { loginWithEmail, signupWithEmail, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
-  const formRef = useRef(null);
 
+  const [flipped, setFlipped] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
@@ -55,14 +55,25 @@ export default function LoginPage() {
 
   const goToForm = (signup) => {
     setIsSignup(signup);
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setError("");
+    setFlipped(true);
   };
 
   return (
     <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-4xl grid lg:grid-cols-2 gap-8 items-stretch">
-        {/* Pitch card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-black/[0.08] p-8 flex flex-col justify-center">
+      <div className="w-full max-w-md" style={{ perspective: "1600px" }}>
+        <div
+          className="relative w-full min-h-[600px] transition-transform duration-700"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
+        {/* Front: pitch card */}
+        <div
+          className="absolute inset-0 bg-white rounded-2xl shadow-lg border border-black/[0.08] p-8 flex flex-col justify-center overflow-y-auto"
+          style={{ backfaceVisibility: "hidden" }}
+        >
           <p
             className="text-[#ff5a5f] text-[13px] font-bold uppercase tracking-wide mb-3"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -131,11 +142,22 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Auth form card */}
+        {/* Back: auth form card */}
         <div
-          ref={formRef}
-          className="bg-white rounded-2xl shadow-lg border border-black/[0.08] w-full p-8"
+          className="absolute inset-0 bg-white rounded-2xl shadow-lg border border-black/[0.08] p-8 overflow-y-auto"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
+        <button
+          onClick={() => setFlipped(false)}
+          className="flex items-center gap-1.5 text-[13px] font-medium text-[#717171] hover:text-[#1a1a1a] transition-colors mb-4"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <div className="w-12 h-12 flex items-center justify-center">
@@ -254,6 +276,7 @@ export default function LoginPage() {
             {isSignup ? "Sign In" : "Sign Up"}
           </button>
         </p>
+        </div>
         </div>
       </div>
     </div>
