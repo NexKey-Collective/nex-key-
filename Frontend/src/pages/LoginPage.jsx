@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const PITCH_CHECKLIST = [
   "Personalized match scores",
@@ -13,10 +13,12 @@ export default function LoginPage() {
   const { loginWithEmail, signupWithEmail, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  const [flipped, setFlipped] = useState(false);
+  const [searchParams] = useSearchParams();
+  const signupRequested = searchParams.get("mode") === "signup";
+  const [flipped, setFlipped] = useState(signupRequested);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignup, setIsSignup] = useState(false);
+  const [isSignup, setIsSignup] = useState(signupRequested);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 

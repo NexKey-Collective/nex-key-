@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import DealsTypeHeader from "../components/deals/DealsTypeHeader";
-import DealsTypeGrid from "../components/deals/DealsTypeGrid";
+import BuyDealsBrowser from "../components/deals/BuyDealsBrowser";
+
 import { getDeals } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -17,7 +17,7 @@ const DEFAULT_PANEL_FILTERS = {
 };
 
 export default function DealsTypePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,9 +33,10 @@ export default function DealsTypePage() {
   // Applied panel filters — only update when user hits "Apply"
   const [appliedPanelFilters, setAppliedPanelFilters] = useState({});
 
-  const activeFilterCount = Object.keys(appliedPanelFilters).length;
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchDeals = async () => {
       setLoading(true);
       setError("");
@@ -87,18 +88,21 @@ export default function DealsTypePage() {
           });
         }
 
-        setDeals(results);
+        if (activeFilter !== "All" && activeFilter !== "Creative") {
+          results = results.filter((deal) => deal.dealType?.toLowerCase() === activeFilter.toLowerCase());
+        }
+        if (!cancelled) setDeals(results);
       } catch (err) {
         console.error("Failed to fetch deals:", err);
-        setError("Failed to load deals. Please try again.");
+        if (!cancelled) setError("Failed to load deals. Please try again.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     const timer = setTimeout(fetchDeals, searchQuery ? 400 : 0);
-    return () => clearTimeout(timer);
-  }, [activeFilter, searchQuery, inlineFilters, appliedPanelFilters]);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [activeFilter, searchQuery, inlineFilters, appliedPanelFilters, retry]);
 
   const handleApplyPanel = (filters) => {
     setAppliedPanelFilters(filters);
@@ -107,7 +111,8 @@ export default function DealsTypePage() {
   const formattedDeals = useMemo(() => {
     return deals.map((deal) => ({
       id: deal.id,
-      image: deal.listingImageUrl || "https://placehold.co/400x300?text=No+Image",
+      image: deal.listingImageUrl || "",
+      amount: deal.entryFee == null ? null : Number(deal.entryFee),
       badge: deal.dealType || null,
       exitStrategies: deal.exitStrategies || [],
       websiteTags: deal.websiteTags || [],
@@ -125,31 +130,13 @@ export default function DealsTypePage() {
   }, [deals]);
 
   return (
-    <div className="min-h-screen bg-white">
-      <DealsTypeHeader
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onLogout={user ? logout : undefined}
-        onInlineFilters={setInlineFilters}
-        onApplyPanel={handleApplyPanel}
-        panelFilters={panelFilters}
-        onPanelFiltersChange={setPanelFilters}
-        activeFilterCount={activeFilterCount}
-      />
-
-      {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-8 h-8 border-4 border-[#ff5a5f] border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center py-24">
-          <p className="text-red-500 text-[16px]">{error}</p>
-        </div>
-      ) : (
-        <DealsTypeGrid deals={formattedDeals} />
-      )}
-    </div>
+    <BuyDealsBrowser
+      deals={formattedDeals} loading={loading} error={error} user={user}
+      activeFilter={activeFilter} onFilterChange={setActiveFilter}
+      searchQuery={searchQuery} onSearchChange={setSearchQuery}
+      panelFilters={panelFilters} onPanelFiltersChange={setPanelFilters}
+      onApplyPanel={handleApplyPanel} onRetry={() => setRetry((value) => value + 1)}
+      inlineFilters={inlineFilters} onInlineFilters={setInlineFilters}
+    />
   );
 }
