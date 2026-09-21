@@ -114,3 +114,9 @@ export async function saveMatchSettings(settings) {
   const data = await res.json();
   return data.settings;
 }
+
+export async function getMapLocations(signal) {
+  const response = await fetch(`${API_URL}/deals/map-locations`, { signal });
+  if (!response.ok) throw new Error("Map locations are temporarily unavailable.");
+  return response.json();
+}

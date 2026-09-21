@@ -1,15 +1,33 @@
-export default function Footer() {
+import { palette } from "./public/theme";
+import { BRAND } from "./public/content";
+const { line, muted, coral, text } = palette;
+function Footer() {
   return (
-    <footer className="bg-dark px-6 py-10">
-      <div className="max-w-7xl mx-auto flex flex-col items-center gap-4 text-center">
-        <div className="flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-full bg-brand text-white font-bold text-[15px] flex items-center justify-center">
+    <footer style={{ borderColor: line }} className="border-t">
+      <div
+        className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[14px]"
+        style={{ color: muted }}
+      >
+        <div className="flex items-center gap-2">
+          <span
+            style={{ background: coral }}
+            className="w-7 h-7 rounded-full grid place-items-center text-white text-[13px]"
+          >
             N
           </span>
-          <span className="text-white text-[17px] font-bold tracking-tight">NextKey Collective</span>
+          <span
+            className="text-[16px]"
+            style={{ fontWeight: 600, color: text }}
+          >
+            {BRAND}
+          </span>
         </div>
-        <p className="text-[13px] text-text-muted">© 2026 — Strategic real estate investment.</p>
+        <span>
+          © {/* @__PURE__ */ new Date().getFullYear()} — Strategic real estate
+          investment.
+        </span>
       </div>
     </footer>
-  )
+  );
 }
+export { Footer as default };

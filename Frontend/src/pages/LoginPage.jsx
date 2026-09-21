@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -21,6 +21,11 @@ export default function LoginPage() {
   const [isSignup, setIsSignup] = useState(signupRequested);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setIsSignup(signupRequested);
+    setFlipped(signupRequested);
+  }, [signupRequested]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

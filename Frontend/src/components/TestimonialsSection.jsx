@@ -1,61 +1,66 @@
-const testimonials = [
-  {
-    name: 'Marcus Rodriguez',
-    role: 'Portfolio Investor',
-    location: 'Austin, TX',
-    quote:
-      "NextKey's off-market pipeline let me close four cash-flowing rentals in a single quarter. The underwriting is airtight.",
-    initials: 'MR',
-    color: 'bg-orange-100 text-orange-600',
-  },
-  {
-    name: 'Sarah Chen',
-    role: 'Wholesaler',
-    location: 'Seattle, WA',
-    quote:
-      'I assigned three contracts in my first month. The buyer network is the real deal — serious investors, fast closes.',
-    initials: 'SC',
-    color: 'bg-blue-100 text-blue-600',
-  },
-  {
-    name: 'David Thompson',
-    role: 'Broker',
-    location: 'Denver, CO',
-    quote:
-      'My investment clients finally have deals worth their time. The co-branded listings have grown my business 3x.',
-    initials: 'DT',
-    color: 'bg-green-100 text-green-600',
-  },
-]
-
-export default function TestimonialsSection() {
+import { ImageWithFallback } from "./public/ImageWithFallback";
+import {
+  Sparkles,
+  Coins,
+  LineChart,
+  Star,
+  Quote,
+  Handshake,
+  ShieldCheck,
+  Network,
+} from "lucide-react";
+import { palette } from "./public/theme";
+import { AFFILIATES } from "./public/content";
+import { SectionHead } from "./public/HomePrimitives";
+import { usePublicSite } from "./public/PublicSiteContext";
+const { sand, card, text, coral, blush, muted, line } = palette;
+const featureIcons = [Sparkles, Coins, LineChart];
+const benefitIcons = [Handshake, ShieldCheck, Network, LineChart];
+function TestimonialsSection() {
+  const { loggedIn, onBrowseDeals, onGate } = usePublicSite();
+  const ctaPrimary = loggedIn ? "My Buy Box" : "Create Free Account";
+  const ctaStart = loggedIn ? "My Buy Box" : "Get Started";
   return (
-    <section className="bg-white py-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-brand text-[14px] font-bold uppercase tracking-wide mb-3">Testimonials</p>
-          <h2 className="text-[36px] font-bold text-dark tracking-tight">Loved by our network</h2>
-        </div>
-
-        {/* Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
-            <div key={t.name} className="card p-8 flex flex-col gap-5">
-              <p className="text-[15px] text-text-body leading-relaxed">"{t.quote}"</p>
-              <div className="flex items-center gap-3 mt-auto pt-2">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-[15px] font-bold shrink-0 ${t.color}`}>
-                  {t.initials}
-                </div>
-                <div>
-                  <p className="text-[15px] font-bold text-dark leading-tight">{t.name}</p>
-                  <p className="text-[13px] text-text-muted">{t.role} · {t.location}</p>
-                </div>
-              </div>
+    <section
+      id="testimonials"
+      className="scroll-mt-32 max-w-6xl mx-auto px-4 sm:px-6 py-14"
+    >
+      <SectionHead eyebrow="Testimonials" title="Loved by our network" center />
+      <div className="mt-8 grid md:grid-cols-3 gap-4">
+        {AFFILIATES.map((a) => (
+          <figure
+            key={a.id}
+            style={{ background: card, borderColor: line }}
+            className="rounded-[1.75rem] border shadow-sm p-7"
+          >
+            <Quote size={26} style={{ color: coral }} />
+            <blockquote className="mt-3 text-[16px] leading-relaxed">
+              “{a.quote}”
+            </blockquote>
+            <div className="mt-4 flex gap-0.5" style={{ color: coral }}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={14} fill={coral} />
+              ))}
             </div>
-          ))}
-        </div>
+            <figcaption className="mt-5 flex items-center gap-3">
+              <ImageWithFallback
+                src={a.image}
+                alt={a.name}
+                className="w-11 h-11 rounded-full object-cover bg-[#e9e2d7]"
+              />
+              <div>
+                <p className="text-[15px]" style={{ fontWeight: 600 }}>
+                  {a.name}
+                </p>
+                <p className="text-[13px]" style={{ color: muted }}>
+                  {a.role}
+                </p>
+              </div>
+            </figcaption>
+          </figure>
+        ))}
       </div>
     </section>
-  )
+  );
 }
+export { TestimonialsSection as default };

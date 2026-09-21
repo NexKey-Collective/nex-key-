@@ -169,7 +169,9 @@ export default function MyBuyBoxPage() {
     try {
       const payload = {
         zipCode: matchForm.zipCode || null,
-        radiusMiles: matchForm.radiusMiles ? Number(matchForm.radiusMiles) : null,
+        radiusMiles: matchForm.radiusMiles
+          ? Number(matchForm.radiusMiles)
+          : null,
         weights: matchForm.weights,
       };
 
@@ -191,13 +193,14 @@ export default function MyBuyBoxPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-light py-12 px-6">
+    <div className="public-site min-h-screen !bg-[#f6f1ea] py-8 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-[32px] font-bold text-dark tracking-tight mb-2">
           My Buy Box
         </h1>
         <p className="text-[15px] text-text-muted mb-10">
-          Tell us what you're looking for so we can match you with the right deals.
+          Tell us what you're looking for so we can match you with the right
+          deals.
         </p>
 
         {loadError && (
@@ -209,9 +212,11 @@ export default function MyBuyBoxPage() {
         {/* Buy Box criteria */}
         <form
           onSubmit={handleBuyBoxSubmit}
-          className="bg-white border border-black/[0.06] rounded-2xl p-8 mb-8"
+          className="bg-white border border-black/[0.06] rounded-[1.5rem] p-8 mb-8"
         >
-          <h2 className="text-[20px] font-bold text-dark mb-6">Buy Box Criteria</h2>
+          <h2 className="text-[20px] font-bold text-dark mb-6">
+            Buy Box Criteria
+          </h2>
 
           <div className="grid sm:grid-cols-2 gap-5 mb-6">
             <label className="flex flex-col gap-1.5">
@@ -223,7 +228,10 @@ export default function MyBuyBoxPage() {
                 placeholder="TX, FL, GA"
                 value={buyBoxForm.preferredStates}
                 onChange={(e) =>
-                  setBuyBoxForm((p) => ({ ...p, preferredStates: e.target.value }))
+                  setBuyBoxForm((p) => ({
+                    ...p,
+                    preferredStates: e.target.value,
+                  }))
                 }
                 className="bg-bg-light border border-black/[0.08] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand/40"
               />
@@ -238,7 +246,10 @@ export default function MyBuyBoxPage() {
                 placeholder="Dallas, Tampa"
                 value={buyBoxForm.preferredCities}
                 onChange={(e) =>
-                  setBuyBoxForm((p) => ({ ...p, preferredCities: e.target.value }))
+                  setBuyBoxForm((p) => ({
+                    ...p,
+                    preferredCities: e.target.value,
+                  }))
                 }
                 className="bg-bg-light border border-black/[0.08] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand/40"
               />
@@ -254,7 +265,10 @@ export default function MyBuyBoxPage() {
                 placeholder="$"
                 value={buyBoxForm.purchasePriceMax}
                 onChange={(e) =>
-                  setBuyBoxForm((p) => ({ ...p, purchasePriceMax: e.target.value }))
+                  setBuyBoxForm((p) => ({
+                    ...p,
+                    purchasePriceMax: e.target.value,
+                  }))
                 }
                 className="bg-bg-light border border-black/[0.08] rounded-xl px-4 py-2.5 text-[14px] outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand/40"
               />
@@ -352,17 +366,22 @@ export default function MyBuyBoxPage() {
         {/* Match settings */}
         <form
           onSubmit={handleMatchSubmit}
-          className="bg-white border border-black/[0.06] rounded-2xl p-8"
+          className="bg-white border border-black/[0.06] rounded-[1.5rem] p-8"
         >
-          <h2 className="text-[20px] font-bold text-dark mb-2">Match Settings</h2>
+          <h2 className="text-[20px] font-bold text-dark mb-2">
+            Match Settings
+          </h2>
           <p className="text-[14px] text-text-muted mb-6">
-            Set a zip code and radius to match on distance instead of state/city, and
-            adjust how much each factor matters when we score deals for you.
+            Set a zip code and radius to match on distance instead of
+            state/city, and adjust how much each factor matters when we score
+            deals for you.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-5 mb-8">
             <label className="flex flex-col gap-1.5">
-              <span className="text-[13px] font-medium text-text-body">Zip code</span>
+              <span className="text-[13px] font-medium text-text-body">
+                Zip code
+              </span>
               <input
                 type="text"
                 placeholder="75201"

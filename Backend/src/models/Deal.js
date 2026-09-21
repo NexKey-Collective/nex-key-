@@ -33,6 +33,8 @@ const DealFields = {
 function formatDeal(record) {
   return {
     id: record.id,
+    latitude: record.fields.Latitude ?? null,
+    longitude: record.fields.Longitude ?? null,
     address: record.fields[DealFields.ADDRESS] || "",
     city: record.fields[DealFields.CITY] || "",
     state: record.fields[DealFields.STATE] || "",

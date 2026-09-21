@@ -1,30 +1,55 @@
-import { Link } from 'react-router-dom'
-export default function CTASection() {
+import {
+  Sparkles,
+  Coins,
+  LineChart,
+  Handshake,
+  ShieldCheck,
+  Network,
+} from "lucide-react";
+import { palette } from "./public/theme";
+import { usePublicSite } from "./public/PublicSiteContext";
+const { sand, card, text, coral, blush, muted, line } = palette;
+const featureIcons = [Sparkles, Coins, LineChart];
+const benefitIcons = [Handshake, ShieldCheck, Network, LineChart];
+function CTASection() {
+  const { loggedIn, onBrowseDeals, onGate } = usePublicSite();
+  const ctaPrimary = loggedIn ? "My Buy Box" : "Create Free Account";
+  const ctaStart = loggedIn ? "My Buy Box" : "Get Started";
   return (
-    <section className="bg-white py-24 px-6 border-t border-gray-100">
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-[40px] lg:text-[48px] font-bold text-dark tracking-tight mb-4">
-          Start building your real estate<br className="hidden sm:block" /> portfolio today
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
+      <div
+        style={{ background: coral }}
+        className="rounded-[2.5rem] px-8 py-16 text-center text-white"
+      >
+        <h2
+          className="text-[clamp(2rem,4vw,3.2rem)] leading-tight max-w-2xl mx-auto"
+          style={{ fontWeight: 600 }}
+        >
+          Start building your real estate portfolio today
         </h2>
-        <p className="text-text-muted text-[18px] max-w-xl mx-auto mb-10 leading-relaxed">
+        <p
+          className="mt-4 text-[16px] max-w-xl mx-auto"
+          style={{ color: "rgba(255,255,255,0.9)" }}
+        >
           Join 5,000+ investors sourcing vetted, off-market deals on NexKey.
         </p>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            to="/login"
-            className="bg-brand text-white text-[16px] font-semibold px-7 py-3.5 rounded-full hover:bg-brand-dark transition-all duration-200 active:scale-95"
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <button
+            onClick={onGate}
+            style={{ background: "#fff", color: coral }}
+            className="rounded-full px-7 py-4 text-[15px]"
           >
-            Create Free Account
-          </Link>
-          <Link
-            to="/deals"
-            className="bg-[#f4f1ea] text-dark text-[16px] font-semibold px-7 py-3.5 rounded-full hover:bg-[#ece7db] transition-all duration-200 active:scale-95"
+            {ctaPrimary}
+          </button>
+          <button
+            onClick={onBrowseDeals}
+            className="rounded-full px-7 py-4 text-[15px] border border-white/50"
           >
             Browse Deals
-          </Link>
+          </button>
         </div>
       </div>
     </section>
-  )
+  );
 }
+export { CTASection as default };

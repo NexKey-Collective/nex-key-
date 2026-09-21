@@ -1,29 +1,31 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import HeroSection from '../components/HeroSection'
-import AboutSection from '../components/AboutSection'
-import WhyChooseSection from '../components/WhyChooseSection'
-import WhoWeServeSection from '../components/WhoWeServeSection'
-import HowItWorksSection from '../components/HowItWorksSection'
-import PartnerSection from '../components/PartnerSection'
-import TestimonialsSection from '../components/TestimonialsSection'
-import StatsSection from '../components/StatsSection'
-import FAQSection from '../components/FAQSection'
-import ContactSection from '../components/ContactSection'
-import CTASection from '../components/CTASection'
-import Footer from '../components/Footer'
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import HeroSection from "../components/HeroSection";
+import AboutSection from "../components/AboutSection";
+import WhyChooseSection from "../components/WhyChooseSection";
+import WhoWeServeSection from "../components/WhoWeServeSection";
+import HowItWorksSection from "../components/HowItWorksSection";
+import PartnerSection from "../components/PartnerSection";
+import TestimonialsSection from "../components/TestimonialsSection";
+import StatsSection from "../components/StatsSection";
+import FAQSection from "../components/FAQSection";
+import ContactSection from "../components/ContactSection";
+import CTASection from "../components/CTASection";
+import Footer from "../components/Footer";
 
 export default function LandingPage() {
-  const location = useLocation()
+  const location = useLocation();
 
   useEffect(() => {
-    if (!location.hash) return
-    const el = document.querySelector(location.hash)
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [location])
+    if (!location.hash) return;
+    const el = document.getElementById(
+      decodeURIComponent(location.hash.slice(1)),
+    );
+    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [location]);
 
   return (
-    <div className="min-h-screen">
+    <div className="public-site min-h-screen">
       <main>
         <HeroSection />
         <AboutSection />
@@ -39,5 +41,5 @@ export default function LandingPage() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }

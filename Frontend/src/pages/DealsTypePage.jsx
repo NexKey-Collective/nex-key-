@@ -119,9 +119,14 @@ export default function DealsTypePage() {
       price: deal.entryFee ? `$${deal.entryFee.toLocaleString()}` : "Contact",
       address: deal.address || deal.fullAddress || "Address unavailable",
       city: `${deal.city || ""}${deal.city && deal.state ? ", " : ""}${deal.state || ""}`,
+      state: deal.state || "",
+      zipCode: deal.zipCode || "",
+      metroArea: deal.metroArea || "",
+      fullAddress: deal.fullAddress || "",
       beds: deal.bedCount || "-",
       baths: deal.bathCount || "-",
       sqft: "-",
+      interestRate: deal.rateLoan == null ? "—" : `${(deal.rateLoan * 100).toFixed(2)}%`,
       statLabel: "Monthly",
       statValue: deal.totalMonthlyPayment
         ? `$${deal.totalMonthlyPayment.toLocaleString()}`

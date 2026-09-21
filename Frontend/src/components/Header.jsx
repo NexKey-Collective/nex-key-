@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { usePublicSite } from "./public/PublicSiteContext";
 import { useAuth } from "../context/AuthContext";
 
 const NAV_LINKS = [
@@ -10,6 +11,7 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+  const { onGate } = usePublicSite();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -25,14 +27,14 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
+    <header className="bg-white/85 backdrop-blur-md border-b border-[#ece5db] sticky top-0 z-50 font-['DM_Sans']">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[64px] flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-9 h-9 rounded-full bg-brand text-white font-bold text-[18px] flex items-center justify-center">
+          <span className="w-8 h-8 rounded-full bg-brand text-white text-[14px] flex items-center justify-center">
             N
           </span>
-          <span className="text-[19px] font-bold text-dark tracking-tight">
+          <span className="text-[17px] font-semibold text-[#26211c]">
             NextKey Collective
           </span>
         </Link>
@@ -43,16 +45,24 @@ export default function Header() {
             const isActive =
               link.to === "/"
                 ? location.pathname === "/"
-                : location.pathname === link.to;
+                : location.pathname === link.to ||
+                  (link.to === "/deals" &&
+                    location.pathname.startsWith("/deals/"));
             return (
               <Link
                 key={link.label}
                 to={link.to}
+                onClick={(event) => {
+                  if (link.to === "/my-buy-box" && !user) {
+                    event.preventDefault();
+                    onGate();
+                  }
+                }}
                 className={[
-                  "text-[15px] font-medium px-4 py-2 rounded-full transition-colors",
+                  "text-[14px] font-medium px-4 py-2 rounded-full transition-colors",
                   isActive
-                    ? "bg-[#f4f1ea] text-dark"
-                    : "text-text-muted hover:text-text-body",
+                    ? "bg-[#f6f1ea] text-[#26211c]"
+                    : "text-[#8a8175] hover:text-[#26211c]",
                 ].join(" ")}
               >
                 {link.label}
@@ -65,13 +75,13 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-6">
           <button
             onClick={handleAuthClick}
-            className="text-[15px] font-medium text-dark hover:text-brand transition-colors"
+            className="text-[14px] font-medium text-dark hover:text-brand transition-colors"
           >
             {user ? "Sign Out" : "Log In"}
           </button>
           {!user && (
             <Link
-              to="/login"
+              to="/login?mode=signup"
               className="bg-brand text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-brand-dark transition-all duration-200 active:scale-95"
             >
               Sign Up
@@ -84,6 +94,7 @@ export default function Header() {
           className="md:hidden p-2 text-text-body"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
         >
           {menuOpen ? (
             <svg
@@ -124,8 +135,8 @@ export default function Header() {
             <Link
               key={link.label}
               to={link.to}
-              className="text-[15px] font-medium text-text-muted"
-              onClick={() => setMenuOpen(false)}
+              className="text-[14px] font-medium text-text-muted"
+              onClick={(event) => { setMenuOpen(false); if (link.to === "/my-buy-box" && !user) { event.preventDefault(); onGate(); } }}
             >
               {link.label}
             </Link>
@@ -133,13 +144,13 @@ export default function Header() {
           <hr className="border-gray-100" />
           <button
             onClick={handleAuthClick}
-            className="text-left text-[15px] font-medium text-dark"
+            className="text-left text-[14px] font-medium text-dark"
           >
             {user ? "Sign Out" : "Log In"}
           </button>
           {!user && (
             <Link
-              to="/login"
+              to="/login?mode=signup"
               className="bg-brand text-white text-[15px] font-semibold px-6 py-3 rounded-full text-center"
             >
               Sign Up

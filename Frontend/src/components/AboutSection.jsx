@@ -1,54 +1,63 @@
-const aboutImageUrl =
-  'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=80'
-
-const checklist = [
-  'Every deal underwritten before it reaches you',
-  'Creative financing structures built around your goals',
-  'A dedicated specialist from first look to closing',
-]
-
-export default function AboutSection() {
+import { ImageWithFallback } from "./public/ImageWithFallback";
+import {
+  Sparkles,
+  Coins,
+  LineChart,
+  Check,
+  Handshake,
+  ShieldCheck,
+  Network,
+} from "lucide-react";
+import { palette } from "./public/theme";
+import { ABOUT } from "./public/content";
+import { SectionHead } from "./public/HomePrimitives";
+import { usePublicSite } from "./public/PublicSiteContext";
+const { sand, card, text, coral, blush, muted, line } = palette;
+const featureIcons = [Sparkles, Coins, LineChart];
+const benefitIcons = [Handshake, ShieldCheck, Network, LineChart];
+function AboutSection() {
+  const { loggedIn, onBrowseDeals, onGate } = usePublicSite();
+  const ctaPrimary = loggedIn ? "My Buy Box" : "Create Free Account";
+  const ctaStart = loggedIn ? "My Buy Box" : "Get Started";
   return (
-    <section id="about" className="bg-white py-20 px-6 scroll-mt-24">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-        {/* Left: Image */}
-        <img
-          src={aboutImageUrl}
-          alt="Modern home exterior"
-          className="w-full h-[440px] object-cover rounded-3xl shadow-lg"
-        />
-
-        {/* Right: Content */}
+    <section
+      id="about"
+      className="scroll-mt-32 max-w-6xl mx-auto px-4 sm:px-6 py-14"
+    >
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div className="relative rounded-[2rem] overflow-hidden bg-[#e9e2d7] aspect-[4/3]">
+          <ImageWithFallback
+            src={ABOUT.image}
+            alt="Modern home interior"
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div>
-          <p className="text-brand text-[14px] font-bold uppercase tracking-wide mb-4">
-            About NexKey
-          </p>
-
-          <h2 className="text-[36px] lg:text-[40px] font-bold text-dark tracking-tight leading-tight mb-6">
-            A smarter way to invest in real estate
-          </h2>
-
-          <p className="text-[16px] text-text-muted leading-relaxed mb-8">
-            NexKey connects serious investors with vetted, off-market opportunities and
-            creative financing — all backed by transparent underwriting. We've replaced the
-            guesswork of real estate investing with data, structure, and a nationwide network
-            you can trust.
-          </p>
-
-          <div className="flex flex-col gap-4">
-            {checklist.map((item) => (
-              <div key={item} className="flex items-center gap-3">
-                <span className="w-6 h-6 bg-red-50 rounded-full flex items-center justify-center shrink-0">
-                  <svg className="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
+          <SectionHead
+            eyebrow={ABOUT.eyebrow}
+            title={ABOUT.title}
+            sub={ABOUT.body}
+          />
+          <ul className="mt-6 space-y-3">
+            {ABOUT.points.map((p) => (
+              <li
+                key={p}
+                className="flex items-start gap-3 text-[15px]"
+                style={{ color: text }}
+              >
+                <span
+                  style={{ background: blush, color: coral }}
+                  className="w-7 h-7 rounded-full grid place-items-center shrink-0"
+                >
+                  <Check size={15} />
                 </span>
-                <span className="text-[16px] text-dark">{item}</span>
-              </div>
+                {p}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </section>
-  )
+  );
 }
+export { AboutSection as default };

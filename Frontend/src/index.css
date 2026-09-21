@@ -7,7 +7,7 @@
     box-sizing: border-box;
   }
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     color: #364153;
     background-color: #ffffff;
     margin: 0;
@@ -43,5 +43,41 @@
   }
   .card {
     @apply bg-white border border-gray-100 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
+}
+
+.public-site {
+  font-family: "DM Sans", sans-serif;
+  color: #26211c;
+  background: #fff;
+}
+.public-site button,
+.public-site a {
+  touch-action: manipulation;
+}
+.public-site :focus-visible,
+.public-auth-dialog :focus-visible {
+  outline: 2px solid #ff5a5f;
+  outline-offset: 3px;
+}
+.public-auth-dialog {
+  border: 0;
+  padding: 0;
+  border-radius: 1.75rem;
+  max-width: 28rem;
+  width: calc(100% - 32px);
+  color: #26211c;
+  font-family: "DM Sans", sans-serif;
+  box-shadow: 0 25px 60px #0003;
+}
+.public-auth-dialog::backdrop {
+  background: #0006;
+  backdrop-filter: blur(4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .public-site * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
