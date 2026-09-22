@@ -4,7 +4,10 @@ const { DEALS_TABLE, formatDeal } = require("../models/Deal");
 // Airtable paginates the ~1000-row Deals table into ~10 sequential requests,
 // so a live fetch takes 10s+. Cache the full formatted list in memory and
 // re-filter it in JS instead of round-tripping to Airtable on every request.
-const CACHE_TTL_MS = 60 * 1000;
+// TTL is 5 minutes (deal listings don't change minute-to-minute) so most
+// requests never pay the 10s Airtable cost; the cache is also warmed on
+// server boot below so the very first user doesn't pay it either.
+const CACHE_TTL_MS = 5 * 60 * 1000;
 let cache = { deals: null, fetchedAt: 0 };
 let inflight = null;
 
@@ -81,5 +84,11 @@ async function searchDeals(query) {
       .some((field) => String(field).toLowerCase().includes(searchTerm))
   );
 }
+
+// Warm the cache as soon as the server boots instead of waiting for the
+// first request to pay the 10s Airtable cost.
+getCachedDeals().catch((error) => {
+  console.error("Failed to warm deals cache on boot:", error);
+});
 
 module.exports = { getAllDeals, getDealById, getDealsWithFilters, searchDeals };

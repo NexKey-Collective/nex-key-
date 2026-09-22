@@ -43,6 +43,28 @@ function formatBuyBox(record) {
   };
 }
 
+// Airtable stores these as comma-joined text (see mapGhlPayload below, which
+// has always written them this way from GHL submissions) — not as native
+// multi-select arrays. Any write path that hands Airtable a raw JS array for
+// one of these fields writes the wrong shape. Used to normalize the in-app
+// Buy Box create/update path (userBuyBoxService) to match.
+const LIST_FIELDS = [
+  BuyBoxFields.PREFERRED_STATES,
+  BuyBoxFields.PREFERRED_CITIES,
+  BuyBoxFields.BUYING_STRATEGIES,
+  BuyBoxFields.INTERESTED_DEAL_TYPE,
+];
+
+function normalizeListFields(fields) {
+  const normalized = { ...fields };
+  for (const field of LIST_FIELDS) {
+    if (Array.isArray(normalized[field])) {
+      normalized[field] = normalized[field].join(", ");
+    }
+  }
+  return normalized;
+}
+
 // Maps GHL webhook payload to clean fields for Airtable
 function mapGhlPayload(payload) {
   const fields = {
@@ -86,4 +108,4 @@ function mapGhlPayload(payload) {
   return fields;
 }
 
-module.exports = { BUYBOX_TABLE, BuyBoxFields, formatBuyBox, mapGhlPayload };
+module.exports = { BUYBOX_TABLE, BuyBoxFields, formatBuyBox, mapGhlPayload, normalizeListFields };

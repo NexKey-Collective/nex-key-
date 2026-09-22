@@ -67,4 +67,34 @@ function formatDeal(record) {
   };
 }
 
-module.exports = { DEALS_TABLE, DealFields, formatDeal };
+// Fields the deal *list* grid actually renders (see DealsTypePage/DealTypeCard
+// on the frontend). The list endpoint can return ~1000 records at once, and
+// detail-only fields (Google Drive links, HOA notes, metro area, etc.) were
+// nearly half the payload for data the grid never reads. Detail view fetches
+// the full record separately via getDealById, so trimming here is safe.
+const LIST_FIELDS = [
+  "id",
+  "address",
+  "city",
+  "state",
+  "fullAddress",
+  "zipCode",
+  "metroArea",
+  "dealType",
+  "entryFee",
+  "rateLoan",
+  "bedCount",
+  "bathCount",
+  "totalMonthlyPayment",
+  "listingImageUrl",
+  "exitStrategies",
+  "websiteTags",
+];
+
+function toListDeal(deal) {
+  const summary = {};
+  for (const field of LIST_FIELDS) summary[field] = deal[field];
+  return summary;
+}
+
+module.exports = { DEALS_TABLE, DealFields, formatDeal, toListDeal };

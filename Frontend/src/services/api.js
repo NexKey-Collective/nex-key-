@@ -31,6 +31,16 @@ export async function syncUser() {
   return res.json();
 }
 
+// Short-lived client cache for deal list requests, keyed by the resolved
+// query string. The deals page re-fetches on every mount (tab switch, back
+// button, etc.) with the same filters most of the time — this avoids paying
+// the network + JSON parse cost again for an identical request within the
+// window, without changing what's shown (results just aren't stale-safe
+// past this TTL, matching the backend's own cache window).
+const DEALS_CACHE_TTL_MS = 30 * 1000;
+const dealsCache = new Map(); // url -> { data, fetchedAt }
+const dealsInflight = new Map(); // url -> Promise
+
 export async function getDeals(filters = {}) {
   const headers = await getOptionalAuthHeaders();
   const params = new URLSearchParams();
@@ -56,9 +66,32 @@ export async function getDeals(filters = {}) {
   const queryString = params.toString();
   const url = queryString ? `${API_URL}/deals?${queryString}` : `${API_URL}/deals`;
 
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error("Failed to fetch deals");
-  return res.json();
+  const cached = dealsCache.get(url);
+  if (cached && Date.now() - cached.fetchedAt < DEALS_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
+  if (dealsInflight.has(url)) {
+    return dealsInflight.get(url);
+  }
+
+  const request = fetch(url, { headers })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch deals");
+      return res.json();
+    })
+    .then((data) => {
+      dealsCache.set(url, { data, fetchedAt: Date.now() });
+      dealsInflight.delete(url);
+      return data;
+    })
+    .catch((error) => {
+      dealsInflight.delete(url);
+      throw error;
+    });
+
+  dealsInflight.set(url, request);
+  return request;
 }
 
 export async function getDealById(id) {

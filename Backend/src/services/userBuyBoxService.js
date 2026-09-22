@@ -1,10 +1,11 @@
 const base = require("../config/airtable");
-const { BUYBOX_TABLE, BuyBoxFields, formatBuyBox } = require("../models/BuyBox");
+const { BUYBOX_TABLE, BuyBoxFields, formatBuyBox, normalizeListFields } = require("../models/BuyBox");
+const { escapeFormulaValue } = require("../utils/airtableFormula");
 
 async function findByUserId(userId) {
   const records = await base(BUYBOX_TABLE)
     .select({
-      filterByFormula: `{${BuyBoxFields.USER_ID}} = '${userId}'`,
+      filterByFormula: `{${BuyBoxFields.USER_ID}} = '${escapeFormulaValue(userId)}'`,
       maxRecords: 1,
     })
     .firstPage();
@@ -17,7 +18,7 @@ async function createForUser(userId, fields) {
   const records = await base(BUYBOX_TABLE).create([
     {
       fields: {
-        ...fields,
+        ...normalizeListFields(fields),
         [BuyBoxFields.USER_ID]: userId,
         [BuyBoxFields.SUBMITTED_AT]: new Date().toISOString().split("T")[0],
       },
@@ -34,7 +35,7 @@ async function updateByUserId(userId, fields) {
   const records = await base(BUYBOX_TABLE).update([
     {
       id: existing.id,
-      fields,
+      fields: normalizeListFields(fields),
     },
   ]);
 

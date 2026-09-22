@@ -66,6 +66,8 @@ export default function DealTypeCard({ deal }) {
         <img
           src={deal.image}
           alt={deal.address}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
 

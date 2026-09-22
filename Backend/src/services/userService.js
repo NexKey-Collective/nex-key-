@@ -1,10 +1,11 @@
 const base = require("../config/airtable");
 const { USERS_TABLE, UserFields, formatUser } = require("../models/User");
+const { escapeFormulaValue } = require("../utils/airtableFormula");
 
 async function findByFirebaseUid(uid) {
   const records = await base(USERS_TABLE)
     .select({
-      filterByFormula: `{${UserFields.FIREBASE_UID}} = '${uid}'`,
+      filterByFormula: `{${UserFields.FIREBASE_UID}} = '${escapeFormulaValue(uid)}'`,
       maxRecords: 1,
     })
     .firstPage();
@@ -16,7 +17,7 @@ async function findByFirebaseUid(uid) {
 async function findByEmail(email) {
   const records = await base(USERS_TABLE)
     .select({
-      filterByFormula: `{${UserFields.EMAIL}} = '${email}'`,
+      filterByFormula: `{${UserFields.EMAIL}} = '${escapeFormulaValue(email)}'`,
       maxRecords: 1,
     })
     .firstPage();

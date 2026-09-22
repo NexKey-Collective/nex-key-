@@ -1,10 +1,11 @@
 const base = require("../config/airtable");
 const { BUYBOX_TABLE, BuyBoxFields, formatBuyBox } = require("../models/BuyBox");
+const { escapeFormulaValue } = require("../utils/airtableFormula");
 
 async function findByEmail(email) {
   const records = await base(BUYBOX_TABLE)
     .select({
-      filterByFormula: `{${BuyBoxFields.EMAIL}} = '${email}'`,
+      filterByFormula: `{${BuyBoxFields.EMAIL}} = '${escapeFormulaValue(email)}'`,
       maxRecords: 1,
     })
     .firstPage();
@@ -16,7 +17,7 @@ async function findByEmail(email) {
 async function findByGhlContactId(contactId) {
   const records = await base(BUYBOX_TABLE)
     .select({
-      filterByFormula: `{${BuyBoxFields.GHL_CONTACT_ID}} = '${contactId}'`,
+      filterByFormula: `{${BuyBoxFields.GHL_CONTACT_ID}} = '${escapeFormulaValue(contactId)}'`,
       maxRecords: 1,
     })
     .firstPage();
