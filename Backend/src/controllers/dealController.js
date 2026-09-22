@@ -31,6 +31,11 @@ const getDeals = async (req, res) => {
 const getDealById = async (req, res) => {
   try {
     const deal = await dealService.getDealById(req.params.id);
+    // Matches the list endpoint: a deal that's sold, expired, or assigned
+    // elsewhere shouldn't be viewable even via a direct/stale link.
+    if (deal.dealStatus !== "Available") {
+      return res.status(404).json({ error: "Deal not found" });
+    }
     return res.status(200).json({ deal });
   } catch (error) {
     console.error("Get deal error:", error);

@@ -20,7 +20,10 @@ async function getCachedDeals() {
       .select()
       .all()
       .then((records) => {
-        const deals = records.map(formatDeal);
+        // Airtable holds every deal ever intaken (sold, expired, assigned to
+        // other buyers, etc.) — only "Available" ones should ever reach a
+        // buyer, so filter here once rather than in every consumer below.
+        const deals = records.map(formatDeal).filter((deal) => deal.dealStatus === "Available");
         cache = { deals, fetchedAt: Date.now() };
         inflight = null;
         return deals;
