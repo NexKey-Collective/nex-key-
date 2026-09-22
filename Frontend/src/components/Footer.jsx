@@ -1,6 +1,6 @@
 import { palette } from "./public/theme";
-import { BRAND } from "./public/content";
-const { line, muted, coral, text } = palette;
+import logo from "../assets/logo.png";
+const { line, muted } = palette;
 function Footer() {
   return (
     <footer style={{ borderColor: line }} className="border-t">
@@ -9,18 +9,7 @@ function Footer() {
         style={{ color: muted }}
       >
         <div className="flex items-center gap-2">
-          <span
-            style={{ background: coral }}
-            className="w-7 h-7 rounded-full grid place-items-center text-white text-[13px]"
-          >
-            N
-          </span>
-          <span
-            className="text-[16px]"
-            style={{ fontWeight: 600, color: text }}
-          >
-            {BRAND}
-          </span>
+          <img src={logo} alt="NexKey Collective" className="h-7 w-auto" />
         </div>
         <span>
           © {/* @__PURE__ */ new Date().getFullYear()} — Strategic real estate

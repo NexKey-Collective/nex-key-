@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 const PITCH_CHECKLIST = [
   "Personalized match scores",
@@ -166,28 +167,8 @@ export default function LoginPage() {
         </button>
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 flex items-center justify-center">
-            <svg viewBox="0 0 48 48" className="w-12 h-12" fill="none">
-              <rect width="48" height="48" rx="10" fill="#ff5a5f" fillOpacity="0.12" />
-              <path d="M24 10L8 22V38H18V28H30V38H40V22L24 10Z" fill="#ff5a5f" />
-              <rect x="21" y="31" width="6" height="7" rx="1" fill="white" />
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span
-              className="text-[#ff5a5f] text-2xl leading-none tracking-[-0.6px]"
-              style={{ fontFamily: "'Archivo Black', sans-serif" }}
-            >
-              NexKey
-            </span>
-            <span
-              className="text-[#ff5a5f] text-[11px] tracking-[1.2px] uppercase leading-none mt-0.5"
-              style={{ fontFamily: "'Archivo Black', sans-serif" }}
-            >
-              COLLECTIVE
-            </span>
-          </div>
+        <div className="flex items-center justify-center mb-8">
+          <img src={logo} alt="NexKey Collective" className="h-12 w-auto" />
         </div>
 
         <h2

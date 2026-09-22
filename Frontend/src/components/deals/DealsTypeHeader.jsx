@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import FilterPanel from "./FilterPanel";
+import logo from "../../assets/logo.png";
 
 const DEAL_TYPES = ["All", "Creative", "Cash", "Novation", "Rent To Own", "Stack"];
 const CREATIVE_SUBTYPES = ["Subto", "Hybrid", "Seller Finance"];
@@ -121,16 +122,8 @@ export default function DealsTypeHeader({
 
         {/* Row 1: Logo + Sign Out */}
         <div className="flex items-center justify-between px-8 h-[60px] border-b border-black/[0.06]">
-          <a href="/" className="flex items-center gap-2.5">
-            <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
-              <rect width="48" height="48" rx="10" fill="#ff5a5f" fillOpacity="0.12" />
-              <path d="M24 10L8 22V38H18V28H30V38H40V22L24 10Z" fill="#ff5a5f" />
-              <rect x="21" y="31" width="6" height="7" rx="1" fill="white" />
-            </svg>
-            <div className="flex flex-col leading-none">
-              <span className="text-[#ff5a5f] text-[18px] tracking-[-0.5px]" style={{ fontFamily: "'Archivo Black', sans-serif" }}>NexKey</span>
-              <span className="text-[#ff5a5f] text-[9px] tracking-[1.4px] uppercase mt-0.5" style={{ fontFamily: "'Archivo Black', sans-serif" }}>COLLECTIVE</span>
-            </div>
+          <a href="/" className="flex items-center">
+            <img src={logo} alt="NexKey Collective" className="h-8 w-auto" />
           </a>
 
           {onLogout && (

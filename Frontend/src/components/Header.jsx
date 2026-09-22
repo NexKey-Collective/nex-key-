@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePublicSite } from "./public/PublicSiteContext";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/logo.png";
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
@@ -30,13 +31,8 @@ export default function Header() {
     <header className="bg-white/85 backdrop-blur-md border-b border-[#ece5db] sticky top-0 z-50 font-['DM_Sans']">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[64px] flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="w-8 h-8 rounded-full bg-brand text-white text-[14px] flex items-center justify-center">
-            N
-          </span>
-          <span className="text-[17px] font-semibold text-[#26211c]">
-            NextKey Collective
-          </span>
+        <Link to="/" className="flex items-center shrink-0">
+          <img src={logo} alt="NexKey Collective" className="h-9 w-auto" />
         </Link>
 
         {/* Desktop Nav */}
