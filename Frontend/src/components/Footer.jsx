@@ -27,7 +27,7 @@ function FooterLink({ to, onClick, children }) {
     <Link
       to={to}
       onClick={onClick}
-      className="text-[14px] hover:text-brand transition-colors"
+      className="text-[13px] hover:text-brand transition-colors"
       style={{ color: muted }}
     >
       {children}
@@ -41,11 +41,11 @@ function Footer() {
 
   return (
     <footer style={{ borderColor: line, background: sand }} className="border-t">
-      <div className="max-w-6xl mx-auto px-6 py-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+      <div className="max-w-6xl mx-auto px-6 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
         {/* Brand */}
-        <div className="flex flex-col gap-4 max-w-xs">
-          <img src={logo} alt="NexKey Collective" className="h-9 w-auto" />
-          <p className="text-[14px] leading-relaxed" style={{ color: muted }}>
+        <div className="flex flex-col gap-3 max-w-xs">
+          <img src={logo} alt="NexKey Collective" className="h-7 w-auto" />
+          <p className="text-[13px] leading-relaxed" style={{ color: muted }}>
             Premium real estate investment opportunities — off-market deals,
             creative financing, and data-driven insights.
           </p>
@@ -54,12 +54,12 @@ function Footer() {
         {/* Explore */}
         <div>
           <h3
-            className="text-[13px] font-semibold uppercase tracking-wide mb-4"
+            className="text-[12px] font-semibold uppercase tracking-wide mb-3"
             style={{ color: text }}
           >
             Explore
           </h3>
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2">
             {EXPLORE_LINKS.map((link) => (
               <li key={link.label}>
                 <FooterLink
@@ -81,12 +81,12 @@ function Footer() {
         {/* Company */}
         <div>
           <h3
-            className="text-[13px] font-semibold uppercase tracking-wide mb-4"
+            className="text-[12px] font-semibold uppercase tracking-wide mb-3"
             style={{ color: text }}
           >
             Company
           </h3>
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2">
             {COMPANY_LINKS.map((link) => (
               <li key={link.label}>
                 <FooterLink to={link.to}>{link.label}</FooterLink>
@@ -98,14 +98,14 @@ function Footer() {
         {/* Contact */}
         <div>
           <h3
-            className="text-[13px] font-semibold uppercase tracking-wide mb-4"
+            className="text-[12px] font-semibold uppercase tracking-wide mb-3"
             style={{ color: text }}
           >
             Contact
           </h3>
-          <ul className="flex flex-col gap-3 text-[14px]" style={{ color: muted }}>
-            <li className="flex items-center gap-2.5">
-              <Mail size={16} className="shrink-0" />
+          <ul className="flex flex-col gap-2 text-[13px]" style={{ color: muted }}>
+            <li className="flex items-center gap-2">
+              <Mail size={14} className="shrink-0" />
               <a
                 href={`mailto:${CONTACT.email}`}
                 className="hover:text-brand transition-colors"
@@ -113,12 +113,12 @@ function Footer() {
                 {CONTACT.email}
               </a>
             </li>
-            <li className="flex items-center gap-2.5">
-              <Phone size={16} className="shrink-0" />
+            <li className="flex items-center gap-2">
+              <Phone size={14} className="shrink-0" />
               <span>{CONTACT.phone}</span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <Clock size={16} className="shrink-0" />
+            <li className="flex items-center gap-2">
+              <Clock size={14} className="shrink-0" />
               <span>{CONTACT.hours}</span>
             </li>
           </ul>
@@ -127,7 +127,7 @@ function Footer() {
 
       <div style={{ borderColor: line }} className="border-t">
         <div
-          className="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px]"
+          className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12px]"
           style={{ color: muted }}
         >
           <span>
