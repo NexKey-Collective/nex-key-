@@ -62,6 +62,11 @@ async function geocode(deals) {
 function storedLocation(deal) {
   if (deal.latitude == null || deal.longitude == null || deal.latitude === '' || deal.longitude === '') return null;
   const latitude = Number(deal.latitude), longitude = Number(deal.longitude);
+  // (0, 0) is "Null Island" in the Gulf of Guinea — no real US listing is
+  // actually there, so a stored 0/0 means the field was never set (or was
+  // zeroed by a bad import), not a real coordinate. Treat it as missing so
+  // the deal falls back to Census geocoding instead of pinning to Africa.
+  if (latitude === 0 && longitude === 0) return null;
   return Number.isFinite(latitude) && Number.isFinite(longitude) && Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180
     ? { latitude, longitude, accuracy: 'stored', source: 'Listing' } : null;
 }
