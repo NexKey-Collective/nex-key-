@@ -210,8 +210,9 @@ const CONTACT = {
   eyebrow: "Contact",
   title: "Let's find your next deal",
   body: "Questions about a property, financing, or getting started? Our investment specialists are ready to help.",
-  email: "hello@nexkey.com",
-  phone: "1-800-NEXKEY",
+  email: "Info@nexkeycollective.com",
+  phone: "(917) 775-0286",
+  phoneLabel: "Call Nexus AI",
   hours: "Mon\u2013Fri \xB7 8am\u20137pm CT",
 };
 export {
