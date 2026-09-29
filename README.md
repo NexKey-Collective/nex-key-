@@ -14,3 +14,17 @@ folder across deployments to retain the cache. Without this setting, stored
 coordinates still work and no addresses are sent for geocoding.
 
 Run coordinate-parsing checks with `node --test Backend/test/mapService.test.js`.
+
+### Deal loading and freshness
+
+The shared backend deals cache requests only Available Airtable records and the
+fields used by the deal formatter (including map coordinates). Requests trigger
+a background refresh after four minutes. At five minutes, requests must wait for
+a successful refresh; upstream failures never extend that limit. Failed refreshes
+back off for 30 seconds. The frontend list cache can retain a response for another
+30 seconds; already-open pages do not automatically refresh. Detail pages fetch
+the record directly and check availability.
+
+Secondary page routes load on demand; the landing page remains eagerly loaded.
+Run the cache and existing checks with
+`node --test Backend/test/*.test.js Frontend/test/*.test.js`.
