@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { ImageWithFallback } from "./public/ImageWithFallback";
 import {
   Sparkles,
@@ -55,6 +56,7 @@ function AboutSection() {
               </li>
             ))}
           </ul>
+          <Link to="/about" className="inline-flex mt-6 rounded-full bg-brand px-6 py-3 text-white">Learn About NexKey</Link>
         </div>
       </div>
     </section>

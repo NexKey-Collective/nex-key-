@@ -1,17 +1,24 @@
-const BRAND = "NextKey Collective";
+const BRAND = "NexKey Collective";
 const HERO = {
-  eyebrow: "Trusted by 5,000+ investors",
-  title: "Premium Real Estate Investment Opportunities",
-  subtitle:
-    "Access exclusive off-market deals, creative financing solutions, and data-driven insights. Build lasting wealth through strategic real estate investments.",
-  primaryCta: "Browse Deals",
-  secondaryCta: "Learn More",
+  "eyebrow": "Your next chapter starts here",
+  "title": "At NexKey, Your Success is Personal",
+  "subtitle": "Whether your strategy is co-living, STR, or fix-and-flip, we deliver every high-potential deal in one place. No banks, no confusion — just seamless white-glove support from search to offer to keys in hand.",
+  "primaryCta": "Find Your NexDeal",
+  "secondaryCta": "Learn About NexKey"
 };
 const STATS = [
-  { value: "$125M+", label: "Transaction Volume" },
-  { value: "850+", label: "Properties Closed" },
-  { value: "14.2%", label: "Avg. Annual ROI" },
-  { value: "5,000+", label: "Active Investors" },
+  {
+    "value": "100+",
+    "label": "Exclusive & partner deals"
+  },
+  {
+    "value": "100+",
+    "label": "Creative finance closings"
+  },
+  {
+    "value": "Nationwide",
+    "label": "Deal coverage"
+  }
 ];
 const PROPERTIES = [
   {
@@ -59,86 +66,98 @@ const PROPERTIES = [
 ];
 const FEATURES = [
   {
-    title: "Off-Market Access",
-    body: "Exclusive deals you won't find on the MLS, sourced through our nationwide acquisition network.",
+    "title": "Fresh Daily Deal Inventory",
+    "points": [
+      "100+ NexKey exclusive and partner deals updated daily on our list.",
+      "Nationwide coverage: seller finance, subto, hybrids, DSCR carryback, cash and more.",
+      "Transparent terms, no markups — all with an easy-to-navigate experience designed around you."
+    ],
+    "action": "deals",
+    "cta": "Find Your NexDeal"
   },
   {
-    title: "Creative Financing",
-    body: "Seller financing, subject-to, and partnership structures tailored to your investment goals.",
+    "title": "Your Mission, Our Focus",
+    "points": [
+      "Too many deals, not the right ones? Update your Buy Box and get sent only what fits.",
+      "Book free 1-on-1 deal shopping sessions with our specialist and find deals quicker with focus.",
+      "Personalized service blends human expertise with smart AI to find your perfect match."
+    ],
+    "action": "buybox",
+    "cta": "Edit Buy Box"
   },
   {
-    title: "Data-Driven Insights",
-    body: "Underwriting, comps, and ROI projections on every deal so you invest with confidence.",
-  },
+    "title": "Easy Closings, Real Results",
+    "points": [
+      "100+ deals closed with fast, transparent communication and expert support.",
+      "Keep track of favorites and in-progress deals to focus on building wealth.",
+      "Dedicated pros guide you every step, handling logistics to keep it real and smooth."
+    ],
+    "action": "about",
+    "cta": "Learn About NexKey"
+  }
 ];
 const AUDIENCES = [
   {
-    title: "Investors",
-    body: "Build a passive portfolio with vetted, cash-flowing properties and full underwriting support.",
-    points: ["Curated deal flow", "Hands-off management", "Quarterly returns"],
+    "title": "Investors",
+    "body": "Simplify your portfolio growth in one place with no banks needed! We work with your existing processes and develop new ones together.",
+    "points": []
   },
   {
-    title: "Wholesalers",
-    body: "Move contracts faster with a buyer network of 5,000+ active, pre-qualified investors.",
-    points: ["Instant buyer match", "Escrow handling", "Marketing tools"],
+    "title": "Wholesalers",
+    "body": "You bring deals, we get buyers. Get timely feedback and progress updates. Receive hands-on negotiation support.",
+    "points": []
   },
   {
-    title: "Agents",
-    body: "Bring investment clients deals that close, and earn on every transaction in the network.",
-    points: ["Referral splits", "Co-branded deals", "Priority listings"],
-  },
+    "title": "Connectors",
+    "body": "The first site to embrace connectors! Spread the love to your buyers who need deals — bring them and get paid!",
+    "points": []
+  }
 ];
 const STEPS = [
   {
-    n: "01",
-    title: "Set Your Buy Box",
-    body: "Tell us your markets, budget, and strategy. We tailor deal flow to your exact criteria.",
+    "n": "01",
+    "title": "Edit Your Buy Box",
+    "body": "Receive daily, personalized deal alerts on your phone or inbox."
   },
   {
-    n: "02",
-    title: "Review Vetted Deals",
-    body: "Get underwritten opportunities with comps, projections, and inspection reports.",
+    "n": "02",
+    "title": "Chat with Us",
+    "body": "Book sessions to find deals, get expert advice, and structure offers."
   },
   {
-    n: "03",
-    title: "Close With Confidence",
-    body: "Our team handles financing, escrow, and closing so you can scale your portfolio.",
+    "n": "03",
+    "title": "Close Seamlessly",
+    "body": "Our team coordinates every aspect — keeping you informed."
   },
+  {
+    "n": "04",
+    "title": "Profit and Repeat",
+    "body": "Scale your portfolio with consistent deal flow, supported by our community."
+  }
 ];
 const AFFILIATES = [
   {
-    id: "a1",
-    name: "Marcus Rodriguez",
-    role: "Portfolio Investor \xB7 Austin, TX",
-    quote:
-      "NextKey's off-market pipeline let me close four cash-flowing rentals in a single quarter. The underwriting is airtight.",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format",
+    "id": "t0",
+    "quote": "From the onset, the team demonstrated a deep understanding of the market, which was evident in their ability to negotiate an excellent entry price for our deal. The negotiation skills were not only impressive but also instrumental in ensuring that we secured the property at a favorable price. This not only boosted my confidence in the investment but also set a positive tone for the entire transaction."
   },
   {
-    id: "a2",
-    name: "Sarah Chen",
-    role: "Wholesaler \xB7 Seattle, WA",
-    quote:
-      "I assigned three contracts in my first month. The buyer network is the real deal \u2014 serious investors, fast closes.",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&auto=format",
+    "id": "t1",
+    "quote": "Working with Kristie and her team has always been a great experience. They are incredibly consistent on the dispo side and consistently pull through with solid buyers. It’s rare to find a team that follows through the way they do. Their communication, reliability, and professionalism make every transaction smooth. Looking forward to continuing to work together!"
   },
   {
-    id: "a3",
-    name: "David Thompson",
-    role: "Broker \xB7 Denver, CO",
-    quote:
-      "My investment clients finally have deals worth their time. The co-branded listings have grown my business 3x.",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&auto=format",
-  },
+    "id": "t2",
+    "quote": "Open and clear communication, ensured that I was always informed and comfortable with every step. Their approachable demeanor and readiness to answer questions made the experience less daunting and more enjoyable - nothing short of amazing. I would highly recommend their services to anyone looking for a seamless and rewarding real estate buying experience."
+  }
 ];
 const PARTNER_STATS = [
-  { value: "150+", label: "Markets Covered" },
-  { value: "$2.3M+", label: "Avg. Deal Size" },
-  { value: "98%", label: "Close Rate" },
-  { value: "12 Days", label: "Avg. Time to Close" },
+  {
+    "value": "Daily",
+    "label": "Inventory updates"
+  },
+  {
+    "value": "1-on-1",
+    "label": "Deal shopping support"
+  }
 ];
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1748063578185-3d68121b11ff?w=1280&h=960&fit=crop&auto=format";
@@ -155,56 +174,46 @@ const HOME_SECTIONS = [
   { id: "contact", label: "Contact" },
 ];
 const ABOUT = {
-  eyebrow: "About NexKey",
-  title: "A smarter way to invest in real estate",
-  body: "NexKey connects serious investors with vetted, off-market opportunities and creative financing \u2014 all backed by transparent underwriting. We've replaced the guesswork of real estate investing with data, structure, and a nationwide network you can trust.",
-  points: [
-    "Every deal underwritten before it reaches you",
-    "Creative financing structures built around your goals",
-    "A dedicated specialist from first look to closing",
+  "eyebrow": "About NexKey Collective",
+  "title": "One place. Every part of your investing journey.",
+  "body": "NexKey unifies the real estate investing ecosystem. Whether you’re buying, wholesaling or connecting on deals, we provide clarity, collaboration and support for all parties in the transaction.",
+  "points": [
+    "We help real estate investors close more of the right deals — faster, easier, and with a trusted partner they can count on. With 100+ creative finance closings and support for a community of wholesalers, we’re building the most dependable, tech-forward platform in the space.",
+    "Stop bouncing from place to place. We’re committed to providing you top-quality tools and services so you can get the best investing experience from start to finish. Our platform reduces friction by consolidating deal discovery, submission, communication, and closings — giving you everything you need, all in one place."
   ],
-  image:
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1080&h=1200&fit=crop&auto=format",
+  "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1080&h=1200&fit=crop&auto=format"
 };
 const PARTNER_BENEFITS = [
   {
-    title: "Deal Flow That Fits",
-    body: "Set your Buy Box once and receive matched, underwritten opportunities automatically \u2014 no more sifting through listings.",
+    "title": "Marketing & Dispositions",
+    "body": "Under contract? We’ve got you on marketing and dispo."
   },
   {
-    title: "Aligned Incentives",
-    body: "We only succeed when you close. Our specialists guide financing, diligence, and negotiation end to end.",
-  },
-  {
-    title: "A Network at Scale",
-    body: "Tap a nationwide acquisition network of 5,000+ investors, wholesalers, and agents moving real inventory.",
-  },
-  {
-    title: "Transparent by Default",
-    body: "Comps, projections, and inspection reports on every deal. Invest with full visibility, never a black box.",
-  },
+    "title": "Support from Contract to Close",
+    "body": "Need help closing or want to use our specialized contract? We’ll handle the heavy lifting and teach you along the way too. Submit your deals and we will be in touch right away."
+  }
 ];
 const FAQS = [
   {
-    q: "What is a Buy Box and why do I need one?",
-    a: "A Buy Box is your investment profile \u2014 your target markets, budget, property types, and strategy. Once set, NexKey automatically matches you with off-market deals that fit your exact criteria.",
+    "q": "What is a Buy Box?",
+    "a": "Your Buy Box captures your preferred markets, budget and investment strategy so our team can focus on deals that fit your mission."
   },
   {
-    q: "Do I need an account to browse deals?",
-    a: "No. You can freely browse, search, and filter available deals, and view basic property information. A free account unlocks match scores, saving deals, creating Buy Boxes, AI recommendations, and connecting with sellers.",
+    "q": "Do I need an account to browse deals?",
+    "a": "You can browse available deals without an account. Create a free account to set your Buy Box and save your favorites."
   },
   {
-    q: "What kinds of financing do you support?",
-    a: "We specialize in creative financing including seller finance, subject-to, hybrid structures, and traditional cash purchases \u2014 tailored to your investment goals.",
+    "q": "What kinds of deals can I find?",
+    "a": "Our nationwide inventory includes seller finance, subto, hybrids, DSCR carryback, cash and more."
   },
   {
-    q: "How are deals vetted?",
-    a: "Every opportunity is underwritten before it reaches you, with comps, ROI projections, and inspection reports so you can invest with confidence.",
+    "q": "Can I get help finding the right deal?",
+    "a": "Book a free 1-on-1 deal shopping session with our specialist to focus your search, discuss opportunities and structure offers."
   },
   {
-    q: "Is NexKey available in my market?",
-    a: "We currently source deals across 150+ markets nationwide, and our coverage grows every month. Create a free account to get matched in your target areas.",
-  },
+    "q": "How can I JV with NexKey?",
+    "a": "Submit your deal to our team for help with marketing, dispositions and closing support. We can also help with our specialized contract and guide you along the way."
+  }
 ];
 const CONTACT = {
   eyebrow: "Contact",
@@ -213,7 +222,7 @@ const CONTACT = {
   email: "Info@nexkeycollective.com",
   phone: "(917) 775-0286",
   phoneLabel: "Call Nexus AI",
-  hours: "Mon\u2013Fri \xB7 8am\u20137pm CT",
+
 };
 export {
   ABOUT,

@@ -17,7 +17,10 @@ export default function LandingPage() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!location.hash) return;
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+      return;
+    }
     const el = document.getElementById(
       decodeURIComponent(location.hash.slice(1)),
     );
@@ -28,11 +31,11 @@ export default function LandingPage() {
     <div className="public-site min-h-screen">
       <main>
         <HeroSection />
-        <AboutSection />
         <WhyChooseSection />
         <WhoWeServeSection />
         <HowItWorksSection />
         <PartnerSection />
+        <AboutSection />
         <TestimonialsSection />
         <StatsSection />
         <FAQSection />

@@ -56,7 +56,6 @@ function ContactSection() {
           {[
             { Icon: Mail, label: "Email", value: CONTACT.email },
             { Icon: Phone, label: CONTACT.phoneLabel, value: CONTACT.phone },
-            { Icon: Clock, label: "Hours", value: CONTACT.hours },
           ].map(({ Icon, label, value }) => (
             <div
               key={label}

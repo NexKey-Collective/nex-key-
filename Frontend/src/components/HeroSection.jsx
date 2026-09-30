@@ -30,8 +30,7 @@ function HeroSection() {
             className="mt-5 text-[clamp(2.4rem,5vw,4rem)] leading-[1.05] tracking-tight"
             style={{ fontWeight: 600 }}
           >
-            Premium real estate,{" "}
-            <span style={{ color: coral }}>made simple.</span>
+            {HERO.title}
           </h1>
           <p
             className="mt-5 max-w-lg text-[17px] leading-relaxed"

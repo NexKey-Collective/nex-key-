@@ -25,7 +25,7 @@ function TestimonialsSection() {
       id="testimonials"
       className="scroll-mt-32 max-w-6xl mx-auto px-4 sm:px-6 py-14"
     >
-      <SectionHead eyebrow="Testimonials" title="Loved by our network" center />
+      <SectionHead eyebrow="Testimonials" title="Hear what people are saying about us" center />
       <div className="mt-8 grid md:grid-cols-3 gap-4">
         {AFFILIATES.map((a) => (
           <figure
@@ -37,26 +37,6 @@ function TestimonialsSection() {
             <blockquote className="mt-3 text-[16px] leading-relaxed">
               “{a.quote}”
             </blockquote>
-            <div className="mt-4 flex gap-0.5" style={{ color: coral }}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={14} fill={coral} />
-              ))}
-            </div>
-            <figcaption className="mt-5 flex items-center gap-3">
-              <ImageWithFallback
-                src={a.image}
-                alt={a.name}
-                className="w-11 h-11 rounded-full object-cover bg-[#e9e2d7]"
-              />
-              <div>
-                <p className="text-[15px]" style={{ fontWeight: 600 }}>
-                  {a.name}
-                </p>
-                <p className="text-[13px]" style={{ color: muted }}>
-                  {a.role}
-                </p>
-              </div>
-            </figcaption>
           </figure>
         ))}
       </div>

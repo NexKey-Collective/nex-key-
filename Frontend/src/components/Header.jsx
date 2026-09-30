@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "Buy Deals", to: "/deals" },
   { label: "My Buy Box", to: "/my-buy-box" },
-  { label: "About NexKey", to: "/#about" },
+  { label: "About NexKey", to: "/about" },
 ];
 
 export default function Header() {
