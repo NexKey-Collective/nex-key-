@@ -1,3 +1,4 @@
+const { readWithRetry } = require("../utils/upstream");
 const base = require("../config/airtable");
 const { DEALS_TABLE, DealFields, formatDeal } = require("../models/Deal");
 const { createDealsCache } = require("../utils/dealsCache");
@@ -9,8 +10,12 @@ const DEAL_QUERY = {
   fields: [...Object.values(DealFields), "Latitude", "Longitude"],
 };
 const getCachedDeals = createDealsCache(async () => {
-  const records = await base(DEALS_TABLE).select(DEAL_QUERY).all();
-  return records.map(formatDeal).filter((deal) => deal.dealStatus === "Available");
+  const records = await readWithRetry(() =>
+    base(DEALS_TABLE).select(DEAL_QUERY).all(),
+  );
+  return records
+    .map(formatDeal)
+    .filter((deal) => deal.dealStatus === "Available");
 });
 
 async function getAllDeals() {
@@ -18,7 +23,7 @@ async function getAllDeals() {
 }
 
 async function getDealById(recordId) {
-  const record = await base(DEALS_TABLE).find(recordId);
+  const record = await readWithRetry(() => base(DEALS_TABLE).find(recordId));
   return formatDeal(record);
 }
 
@@ -30,22 +35,46 @@ async function getDealsWithFilters(filters) {
     if (filters.state && deal.state !== filters.state) return false;
     if (filters.city && deal.city !== filters.city) return false;
 
-    if (filters.minBeds && !(Number(deal.bedCount) >= filters.minBeds)) return false;
-    if (filters.minBaths && !(Number(deal.bathCount) >= filters.minBaths)) return false;
+    if (
+      filters.minBeds !== undefined &&
+      !(Number(deal.bedCount) >= filters.minBeds)
+    )
+      return false;
+    if (
+      filters.minBaths !== undefined &&
+      !(Number(deal.bathCount) >= filters.minBaths)
+    )
+      return false;
 
-    if (filters.minEntryFee && !(deal.entryFee >= filters.minEntryFee)) return false;
-    if (filters.maxEntryFee && !(deal.entryFee <= filters.maxEntryFee)) return false;
+    if (
+      filters.minEntryFee !== undefined &&
+      !(deal.entryFee >= filters.minEntryFee)
+    )
+      return false;
+    if (
+      filters.maxEntryFee !== undefined &&
+      !(deal.entryFee <= filters.maxEntryFee)
+    )
+      return false;
 
     if (filters.furnished && deal.furnished !== filters.furnished) return false;
     if (filters.hasPool && deal.hasPool !== filters.hasPool) return false;
     if (filters.multiUnit && deal.multiUnit !== filters.multiUnit) return false;
 
-    if (filters.monthlyMin && !(deal.totalMonthlyPayment >= filters.monthlyMin)) return false;
-    if (filters.monthlyMax && !(deal.totalMonthlyPayment <= filters.monthlyMax)) return false;
+    if (
+      filters.monthlyMin !== undefined &&
+      !(deal.totalMonthlyPayment >= filters.monthlyMin)
+    )
+      return false;
+    if (
+      filters.monthlyMax !== undefined &&
+      !(deal.totalMonthlyPayment <= filters.monthlyMax)
+    )
+      return false;
 
     if (filters.exitStrategies && filters.exitStrategies.length > 0) {
       const hasMatch = filters.exitStrategies.some((strategy) =>
-        deal.exitStrategies.includes(strategy)
+        deal.exitStrategies.includes(strategy),
       );
       if (!hasMatch) return false;
     }
@@ -59,8 +88,14 @@ async function searchDeals(query) {
   const deals = await getCachedDeals();
 
   return deals.filter((deal) =>
-    [deal.address, deal.city, deal.state, deal.fullAddress, deal.zipCode, deal.dealType]
-      .some((field) => String(field).toLowerCase().includes(searchTerm))
+    [
+      deal.address,
+      deal.city,
+      deal.state,
+      deal.fullAddress,
+      deal.zipCode,
+      deal.dealType,
+    ].some((field) => String(field).toLowerCase().includes(searchTerm)),
   );
 }
 

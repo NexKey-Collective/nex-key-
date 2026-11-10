@@ -32,3 +32,8 @@ build/
 # Logs
 logs/
 *.log
+
+# Browser checks
+playwright-report/
+test-results/
+Backend/.cache/

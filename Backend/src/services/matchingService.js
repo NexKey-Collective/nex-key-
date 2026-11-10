@@ -16,7 +16,12 @@ const DEFAULT_WEIGHTS = {
 
 function toList(value) {
   if (!value) return [];
-  return Array.isArray(value) ? value : value.split(", ");
+  return Array.isArray(value)
+    ? value
+    : String(value)
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
 }
 
 function hasZipRadius(userBuyBox) {
@@ -26,7 +31,10 @@ function hasZipRadius(userBuyBox) {
 // Returns distance in miles, or null if it can't be computed (missing/invalid zip).
 function distanceToDeal(deal, userBuyBox) {
   if (!deal.zipCode || !userBuyBox.zipCode) return null;
-  const distance = zipcodes.distance(String(userBuyBox.zipCode), String(deal.zipCode));
+  const distance = zipcodes.distance(
+    String(userBuyBox.zipCode),
+    String(deal.zipCode),
+  );
   return Number.isFinite(distance) ? distance : null;
 }
 
@@ -39,10 +47,25 @@ function evaluateMatch(deal, userBuyBox, weights = DEFAULT_WEIGHTS) {
   const reasons = [];
 
   // 1. DEAL TYPE
-  const strategies = toList(userBuyBox.buyingStrategies);
+  const knownDealTypes = [
+    "cash",
+    "novation",
+    "rent to own",
+    "stack",
+    "subto",
+    "hybrid",
+    "seller finance",
+  ];
+  const strategies = userBuyBox.interestedDealType
+    ? toList(userBuyBox.interestedDealType)
+    : toList(userBuyBox.buyingStrategies).filter((strategy) =>
+        knownDealTypes.includes(strategy.toLowerCase()),
+      );
+  const includes = (values, value) =>
+    values.some((item) => item.toLowerCase() === String(value).toLowerCase());
   if (strategies.length > 0) {
     maxScore += w.dealType;
-    if (strategies.includes(deal.dealType)) {
+    if (includes(strategies, deal.dealType)) {
       score += w.dealType;
       reasons.push(`✅ Deal type matches (${deal.dealType})`);
     }
@@ -56,11 +79,11 @@ function evaluateMatch(deal, userBuyBox, weights = DEFAULT_WEIGHTS) {
       if (distance <= userBuyBox.radiusMiles) {
         score += w.location;
         reasons.push(
-          `✅ ${distance} mi from ${userBuyBox.zipCode} (within ${userBuyBox.radiusMiles} mi radius)`
+          `✅ ${distance} mi from ${userBuyBox.zipCode} (within ${userBuyBox.radiusMiles} mi radius)`,
         );
       } else {
         reasons.push(
-          `⚠️ ${distance} mi from ${userBuyBox.zipCode} (outside ${userBuyBox.radiusMiles} mi radius)`
+          `⚠️ ${distance} mi from ${userBuyBox.zipCode} (outside ${userBuyBox.radiusMiles} mi radius)`,
         );
       }
     }
@@ -68,43 +91,50 @@ function evaluateMatch(deal, userBuyBox, weights = DEFAULT_WEIGHTS) {
     const states = toList(userBuyBox.preferredStates);
     if (states.length > 0) {
       maxScore += w.state;
-      if (states.includes(deal.state)) {
+      if (includes(states, deal.state)) {
         score += w.state;
         reasons.push(`✅ Located in ${deal.state} (preferred state)`);
       }
     }
 
-    // Note: city, unlike state, only counts toward maxScore when it matches
-    // (preserves original scoring behavior — not a criterion that can be "missed").
     const cities = toList(userBuyBox.preferredCities);
-    if (cities.length > 0 && cities.includes(deal.city)) {
-      score += w.city;
+    if (cities.length > 0) {
       maxScore += w.city;
-      reasons.push(`✅ Located in ${deal.city} (preferred city)`);
+      if (includes(cities, deal.city)) {
+        score += w.city;
+        reasons.push(`✅ Located in ${deal.city} (preferred city)`);
+      }
     }
   }
 
   // 3. ENTRY FEE
-  if (userBuyBox.entryFeeMax) {
+  if (userBuyBox.entryFeeMax != null) {
     maxScore += w.entryFee;
-    if (deal.entryFee && deal.entryFee <= userBuyBox.entryFeeMax) {
+    if (deal.entryFee != null && deal.entryFee <= userBuyBox.entryFeeMax) {
       score += w.entryFee;
       reasons.push(
-        `✅ Entry fee $${deal.entryFee.toLocaleString()} (within budget of $${userBuyBox.entryFeeMax.toLocaleString()})`
+        `✅ Entry fee $${deal.entryFee.toLocaleString()} (within budget of $${userBuyBox.entryFeeMax.toLocaleString()})`,
       );
-    } else if (deal.entryFee && deal.entryFee <= userBuyBox.entryFeeMax * 1.1) {
+    } else if (
+      deal.entryFee != null &&
+      deal.entryFee <= userBuyBox.entryFeeMax * 1.1
+    ) {
       // 10% over: partial credit
       score += w.entryFee / 2;
       reasons.push(
-        `⚠️ Entry fee $${deal.entryFee.toLocaleString()} (slightly above budget of $${userBuyBox.entryFeeMax.toLocaleString()})`
+        `⚠️ Entry fee $${deal.entryFee.toLocaleString()} (slightly above budget of $${userBuyBox.entryFeeMax.toLocaleString()})`,
       );
     }
   }
 
   // 4. EXIT STRATEGIES
-  if (strategies.length > 0) {
+  const exits = toList(userBuyBox.buyingStrategies).filter(
+    (strategy) => !knownDealTypes.includes(strategy.toLowerCase()),
+  );
+  if (exits.length > 0) {
     maxScore += w.exitStrategy;
-    const matchingExit = deal.exitStrategies?.filter(es => strategies.includes(es)) || [];
+    const matchingExit =
+      deal.exitStrategies?.filter((es) => includes(exits, es)) || [];
     if (matchingExit.length > 0) {
       score += w.exitStrategy;
       reasons.push(`✅ Supports exit strategies: ${matchingExit.join(", ")}`);
@@ -117,7 +147,7 @@ function evaluateMatch(deal, userBuyBox, weights = DEFAULT_WEIGHTS) {
     if (deal.bedCount && parseInt(deal.bedCount) >= userBuyBox.bedroomsMin) {
       score += w.bedrooms;
       reasons.push(
-        `✅ ${deal.bedCount} bedrooms (meets minimum of ${userBuyBox.bedroomsMin})`
+        `✅ ${deal.bedCount} bedrooms (meets minimum of ${userBuyBox.bedroomsMin})`,
       );
     }
   }
@@ -125,10 +155,10 @@ function evaluateMatch(deal, userBuyBox, weights = DEFAULT_WEIGHTS) {
   // 6. BATHROOMS
   if (userBuyBox.bathroomsMin) {
     maxScore += w.bathrooms;
-    if (deal.bathCount && parseInt(deal.bathCount) >= userBuyBox.bathroomsMin) {
+    if (deal.bathCount && Number(deal.bathCount) >= userBuyBox.bathroomsMin) {
       score += w.bathrooms;
       reasons.push(
-        `✅ ${deal.bathCount} bathrooms (meets minimum of ${userBuyBox.bathroomsMin})`
+        `✅ ${deal.bathCount} bathrooms (meets minimum of ${userBuyBox.bathroomsMin})`,
       );
     }
   }

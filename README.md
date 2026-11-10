@@ -28,3 +28,7 @@ the record directly and check availability.
 Secondary page routes load on demand; the landing page remains eagerly loaded.
 Run the cache and existing checks with
 `node --test Backend/test/*.test.js Frontend/test/*.test.js`.
+
+### Production readiness
+
+See [setup, deployment, verification, monitoring, and rollback](docs/PRODUCTION_RUNBOOK.md). Node 22 is required. CI runs backend/frontend tests, production build, and browser journeys.

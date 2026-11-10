@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
   Map,
@@ -35,6 +35,7 @@ const VIEWS = [
 const VIEW_KEY = "nexkey.public.buydeals.view";
 export default function BuyDealsBrowser({
   deals,
+  matching,
   loading,
   error,
   user,
@@ -57,13 +58,20 @@ export default function BuyDealsBrowser({
       return "map";
     }
   });
+  const [onlyMatches, setOnlyMatches] = useState(false);
+  const [onlySaved, setOnlySaved] = useState(false);
   const [sort, setSort] = useState("asc");
   const [location, setLocation] = useState("");
   const [selected, setSelected] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [page, setPage] = useState(1);
   const { onGate } = usePublicSite();
-  const { saved, toggle, error: saveError } = useSavedDeals();
+  const {
+    saved,
+    toggle,
+    error: saveError,
+    retry: retrySaved,
+  } = useSavedDeals();
   const navigate = useNavigate();
   useEffect(() => {
     try {
@@ -72,13 +80,20 @@ export default function BuyDealsBrowser({
   }, [view]);
   useEffect(
     () => setPage(1),
-    [view, sort, searchQuery, activeFilter, location],
+    [view, sort, searchQuery, activeFilter, location, onlyMatches, onlySaved],
   );
   const results = useMemo(
     () =>
       deals
-        .filter((d) => matchesLocation(d, location))
+        .filter(
+          (d) =>
+            matchesLocation(d, location) &&
+            (!onlyMatches || d.matchScore >= 50) &&
+            (!onlySaved || saved.has(d.id)),
+        )
         .sort((a, b) => {
+          if (sort === "match")
+            return (b.matchScore ?? -1) - (a.matchScore ?? -1);
           if (a.amount == null) return b.amount == null ? 0 : 1;
           if (b.amount == null) return -1;
           return sort === "asc" ? a.amount - b.amount : b.amount - a.amount;
@@ -92,9 +107,9 @@ export default function BuyDealsBrowser({
           monthlyPayment: d.statValue,
           interestRate: d.interestRate || "—",
           priceLabel: "Entry Fee",
-          matchScore: null,
+          matchScore: d.matchScore,
         })),
-    [deals, location, sort],
+    [deals, location, sort, onlyMatches, onlySaved, saved],
   );
   const pageSize =
     view === "table" ? 10 : view === "compact" ? 8 : view === "list" ? 5 : 6;
@@ -113,6 +128,8 @@ export default function BuyDealsBrowser({
   };
   const viewDeal = (d) => navigate(`/deals/${d.id}`);
   const clear = () => {
+    setOnlyMatches(false);
+    setOnlySaved(false);
     onSearchChange("");
     setLocation("");
     onFilterChange("All");
@@ -143,11 +160,51 @@ export default function BuyDealsBrowser({
               >
                 Create a free account
               </button>{" "}
-              to unlock match scores, save deals, and AI recommendations.
+              to unlock match scores, save deals, and personalized
+              recommendations.
             </>
           )}
         </p>
       </div>
+      {user && (
+        <div className="flex flex-wrap items-center gap-4 mb-4 text-sm">
+          <Link
+            className="underline min-h-11 inline-flex items-center"
+            to="/my-buy-box"
+          >
+            {matching?.needsBuyBox
+              ? "Set up your Buy Box for match scores"
+              : "Edit Buy Box"}
+          </Link>
+          {matching?.loading && (
+            <span role="status">Loading match scores…</span>
+          )}
+          {matching?.error && (
+            <span role="alert">
+              {matching.error}{" "}
+              <button className="underline min-h-11" onClick={matching.retry}>
+                Retry scores
+              </button>
+            </span>
+          )}
+          <label className="inline-flex gap-2 items-center min-h-11">
+            <input
+              type="checkbox"
+              checked={onlyMatches}
+              onChange={(e) => setOnlyMatches(e.target.checked)}
+            />
+            My matches (50%+)
+          </label>
+          <label className="inline-flex gap-2 items-center min-h-11">
+            <input
+              type="checkbox"
+              checked={onlySaved}
+              onChange={(e) => setOnlySaved(e.target.checked)}
+            />
+            Saved deals
+          </label>
+        </div>
+      )}
       <div className="bd-toolbar">
         <label className="bd-search">
           <Search size={17} />
@@ -167,6 +224,7 @@ export default function BuyDealsBrowser({
               value={sort}
               onChange={(e) => setSort(e.target.value)}
             >
+              {user && <option value="match">Best match</option>}
               <option value="asc">Entry Fee: Low to High</option>
               <option value="desc">Entry Fee: High to Low</option>
             </select>
@@ -230,7 +288,10 @@ export default function BuyDealsBrowser({
       </div>
       {saveError && (
         <p role="alert" className="mb-3 text-red-700">
-          {saveError}
+          {saveError}{" "}
+          <button className="underline min-h-11" onClick={retrySaved}>
+            Retry saved deals
+          </button>
         </p>
       )}
       {loading ? (
@@ -265,7 +326,16 @@ export default function BuyDealsBrowser({
                 />
               </Suspense>
               <div className="bd-properties">
-                {!results.length && <div className="bd-state" role="status"><h2>No properties found</h2><p>Try another ZIP, city, area, or state.</p><button onClick={() => setLocation("")}>Clear map search</button><button onClick={clear}>Clear all filters</button></div>}
+                {!results.length && (
+                  <div className="bd-state" role="status">
+                    <h2>No properties found</h2>
+                    <p>Try another ZIP, city, area, or state.</p>
+                    <button onClick={() => setLocation("")}>
+                      Clear map search
+                    </button>
+                    <button onClick={clear}>Clear all filters</button>
+                  </div>
+                )}
                 {results.map((d) => (
                   <MapListCard
                     key={d.id}

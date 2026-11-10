@@ -1,8 +1,8 @@
 .buy-deals {
   --bd-ink: #292621;
-  --bd-muted: #817b71;
+  --bd-muted: #6b6257;
   --bd-border: #ebe4da;
-  --bd-accent: #ff555f;
+  --bd-accent: #bd2e3c;
   padding: 38px 26px 24px;
   font-family: "DM Sans", sans-serif;
   color: var(--bd-ink);
@@ -731,9 +731,9 @@
 /* Dimensions and tokens from the exported PublicBuyDeals source. */
 .figma-buy-deals {
   --bd-ink: #26211c;
-  --bd-muted: #8a8175;
+  --bd-muted: #6b6257;
   --bd-border: #ece5db;
-  --bd-accent: #ff5a5f;
+  --bd-accent: #bd2e3c;
   max-width: 1500px;
   margin: 0 auto;
   padding: 32px 24px;

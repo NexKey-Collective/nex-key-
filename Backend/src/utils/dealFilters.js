@@ -5,7 +5,7 @@ function parseDealFilters(query) {
   if (query.state) filters.state = query.state;
   if (query.city) filters.city = query.city;
   if (query.minBeds) filters.minBeds = parseInt(query.minBeds, 10);
-  if (query.minBaths) filters.minBaths = parseInt(query.minBaths, 10);
+  if (query.minBaths) filters.minBaths = Number(query.minBaths);
   if (query.minEntryFee) filters.minEntryFee = parseFloat(query.minEntryFee);
   if (query.maxEntryFee) filters.maxEntryFee = parseFloat(query.maxEntryFee);
   if (query.furnished) filters.furnished = query.furnished;
@@ -16,7 +16,9 @@ function parseDealFilters(query) {
 
   const exitStrategies = query["exitStrategies[]"];
   if (exitStrategies) {
-    filters.exitStrategies = Array.isArray(exitStrategies) ? exitStrategies : [exitStrategies];
+    filters.exitStrategies = Array.isArray(exitStrategies)
+      ? exitStrategies
+      : [exitStrategies];
   }
 
   return filters;

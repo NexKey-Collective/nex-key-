@@ -13,7 +13,7 @@ export function ImageWithFallback({ src, alt, className, ...props }) {
     />
   ) : (
     <div
-      className={`${className || ""} grid place-items-center bg-[#e9e2d7] text-[#8a8175] text-xs`}
+      className={`${className || ""} grid place-items-center bg-[#e9e2d7] text-[#6b6257] text-xs`}
       role="img"
       aria-label={alt || "Photo unavailable"}
     >

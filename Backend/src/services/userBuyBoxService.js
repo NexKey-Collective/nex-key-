@@ -1,14 +1,22 @@
+const { readWithRetry } = require("../utils/upstream");
 const base = require("../config/airtable");
-const { BUYBOX_TABLE, BuyBoxFields, formatBuyBox, normalizeListFields } = require("../models/BuyBox");
+const {
+  BUYBOX_TABLE,
+  BuyBoxFields,
+  formatBuyBox,
+  normalizeListFields,
+} = require("../models/BuyBox");
 const { escapeFormulaValue } = require("../utils/airtableFormula");
 
 async function findByUserId(userId) {
-  const records = await base(BUYBOX_TABLE)
-    .select({
-      filterByFormula: `{${BuyBoxFields.USER_ID}} = '${escapeFormulaValue(userId)}'`,
-      maxRecords: 1,
-    })
-    .firstPage();
+  const records = await readWithRetry(() =>
+    base(BUYBOX_TABLE)
+      .select({
+        filterByFormula: `{${BuyBoxFields.USER_ID}} = '${escapeFormulaValue(userId)}'`,
+        maxRecords: 1,
+      })
+      .firstPage(),
+  );
 
   if (records.length === 0) return null;
   return formatBuyBox(records[0]);
@@ -50,9 +58,9 @@ async function deleteByUserId(userId) {
   return true;
 }
 
-module.exports = { 
-  findByUserId, 
-  createForUser, 
-  updateByUserId, 
-  deleteByUserId 
+module.exports = {
+  findByUserId,
+  createForUser,
+  updateByUserId,
+  deleteByUserId,
 };

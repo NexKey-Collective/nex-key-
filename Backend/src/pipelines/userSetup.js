@@ -8,8 +8,16 @@ const userSetup = async (firebaseUser) => {
   let user = await userService.findByFirebaseUid(uid);
 
   // Fallback: check by email
-  if (!user && email) {
-    user = await userService.findByEmail(email);
+  if (!user && email && firebaseUser.email_verified) {
+    const candidate = await userService.findByEmail(email);
+    if (
+      candidate &&
+      (!candidate.firebaseUid || candidate.firebaseUid === uid)
+    ) {
+      user = candidate;
+      if (!candidate.firebaseUid)
+        user = await userService.updateUser(candidate.id, { firebaseUid: uid });
+    }
   }
 
   // Create if doesn't exist
@@ -21,15 +29,20 @@ const userSetup = async (firebaseUser) => {
   // If so, link it to the user
   let hasBuyBox = false;
 
-  if (email) {
+  if (email && firebaseUser.email_verified) {
     const buyBox = await buyBoxService.findByEmail(email);
-    if (buyBox && !buyBox.userId) {
-      await buyBoxService.linkUser(buyBox.id, user.id);
+    if (buyBox && (!buyBox.userId || buyBox.userId === user.id)) {
+      await buyBoxService.linkUser(buyBox.id, uid);
       hasBuyBox = true;
-    } else if (buyBox && buyBox.userId) {
+    } else if (buyBox && buyBox.userId === uid) {
       hasBuyBox = true;
     }
   }
+
+  const owned = await require("../services/userBuyBoxService").findByUserId(
+    uid,
+  );
+  hasBuyBox = Boolean(owned) || hasBuyBox;
 
   return {
     id: user.id,
@@ -41,4 +54,13 @@ const userSetup = async (firebaseUser) => {
   };
 };
 
-module.exports = userSetup;
+const pending = new Map();
+module.exports = function syncOnce(firebaseUser) {
+  const key = `${firebaseUser.uid}:${Boolean(firebaseUser.email_verified)}`;
+  if (!pending.has(key))
+    pending.set(
+      key,
+      userSetup(firebaseUser).finally(() => pending.delete(key)),
+    );
+  return pending.get(key);
+};

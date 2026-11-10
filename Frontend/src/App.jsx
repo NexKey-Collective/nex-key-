@@ -1,8 +1,11 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { PublicSiteProvider } from "./components/public/PublicSiteContext";
+import AccountStatus from "./components/AccountStatus";
+import NotFoundPage from "./pages/NotFoundPage";
 import Header from "./components/Header";
 import LandingPage from "./pages/LandingPage";
 const AboutPage = lazy(() => import("./pages/AboutPage"));
@@ -18,36 +21,49 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <PublicSiteProvider>
-          <Header />
-          <Suspense fallback={<main className="min-h-[50vh] grid place-items-center" role="status">Loading page…</main>}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/deals" element={<DealsTypePage />} />
-              <Route path="/deals/:id" element={<DealDetailPage />} />
-              <Route path="/privacy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsOfServicePage />} />
-              <Route
-                path="/map"
-                element={
-                  <ProtectedRoute>
-                    <MapPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/my-buy-box"
-                element={
-                  <ProtectedRoute>
-                    <MyBuyBoxPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Suspense>
-        </PublicSiteProvider>
+        <FavoritesProvider>
+          <PublicSiteProvider>
+            <Header />
+            <AccountStatus />
+            <Suspense
+              fallback={
+                <main
+                  className="min-h-[50vh] grid place-items-center"
+                  role="status"
+                >
+                  Loading page…
+                </main>
+              }
+            >
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/deals" element={<DealsTypePage />} />
+                <Route path="/deals/:id" element={<DealDetailPage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsOfServicePage />} />
+                <Route
+                  path="/map"
+                  element={
+                    <ProtectedRoute>
+                      <MapPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my-buy-box"
+                  element={
+                    <ProtectedRoute>
+                      <MyBuyBoxPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Suspense>
+          </PublicSiteProvider>
+        </FavoritesProvider>
       </AuthProvider>
     </BrowserRouter>
   );
