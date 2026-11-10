@@ -1,5 +1,13 @@
 # Production release and operations
 
+## Verified release baseline
+
+[PR #3](https://github.com/NexKey-Collective/nex-key-/pull/3) merged the buyer-journey and production-readiness changes into `main` on November 10, 2026. The application merge commit is `de2a88aa09ea33be247b9ef2307cd0cca493a610`; its tested source head is `858c4fd7bd60f341578ad16c3ca14e245291acf7`.
+
+The [pull-request Production checks run](https://github.com/NexKey-Collective/nex-key-/actions/runs/42884885796) passed dependency installation, both dependency audits, backend/frontend tests, the frontend build, and desktop/mobile browser journeys. Local verification also passed the backend Docker build. The verified test suite contained 26 unit/integration tests and 12 browser journeys; browser journeys mock external services.
+
+Use this commit and CI run as a code-verification reference when preparing deployment. Before release, record the actual Railway deployment ID and frontend artifact alongside the commit, then complete the staging checks below. A merged commit and passing CI do not establish that the production environment has been configured or deployed successfully.
+
 ## Local setup
 
 Use Node 22.12 or newer within the Node 22 line (`nvm use`). Run `npm ci --prefix Backend` and `npm ci --prefix Frontend`.
