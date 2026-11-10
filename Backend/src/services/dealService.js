@@ -1,48 +1,29 @@
+const { readWithRetry } = require("../utils/upstream");
 const base = require("../config/airtable");
-const { DEALS_TABLE, formatDeal } = require("../models/Deal");
+const { DEALS_TABLE, DealFields, formatDeal } = require("../models/Deal");
+const { createDealsCache } = require("../utils/dealsCache");
 
-// Airtable paginates the ~1000-row Deals table into ~10 sequential requests,
-// so a live fetch takes 10s+. Cache the full formatted list in memory and
-// re-filter it in JS instead of round-tripping to Airtable on every request.
-// TTL is 5 minutes (deal listings don't change minute-to-minute) so most
-// requests never pay the 10s Airtable cost; the cache is also warmed on
-// server boot below so the very first user doesn't pay it either.
-const CACHE_TTL_MS = 5 * 60 * 1000;
-let cache = { deals: null, fetchedAt: 0 };
-let inflight = null;
-
-async function getCachedDeals() {
-  const isFresh = cache.deals && Date.now() - cache.fetchedAt < CACHE_TTL_MS;
-  if (isFresh) return cache.deals;
-
-  if (!inflight) {
-    inflight = base(DEALS_TABLE)
-      .select()
-      .all()
-      .then((records) => {
-        // Airtable holds every deal ever intaken (sold, expired, assigned to
-        // other buyers, etc.) — only "Available" ones should ever reach a
-        // buyer, so filter here once rather than in every consumer below.
-        const deals = records.map(formatDeal).filter((deal) => deal.dealStatus === "Available");
-        cache = { deals, fetchedAt: Date.now() };
-        inflight = null;
-        return deals;
-      })
-      .catch((error) => {
-        inflight = null;
-        throw error;
-      });
-  }
-
-  return inflight;
-}
+// Keep fields consumed by the formatter: this cache also serves matching and maps.
+// Detail requests still fetch the full record directly from Airtable.
+const DEAL_QUERY = {
+  filterByFormula: `{${DealFields.DEAL_STATUS}} = 'Available'`,
+  fields: [...Object.values(DealFields), "Latitude", "Longitude"],
+};
+const getCachedDeals = createDealsCache(async () => {
+  const records = await readWithRetry(() =>
+    base(DEALS_TABLE).select(DEAL_QUERY).all(),
+  );
+  return records
+    .map(formatDeal)
+    .filter((deal) => deal.dealStatus === "Available");
+});
 
 async function getAllDeals() {
   return getCachedDeals();
 }
 
 async function getDealById(recordId) {
-  const record = await base(DEALS_TABLE).find(recordId);
+  const record = await readWithRetry(() => base(DEALS_TABLE).find(recordId));
   return formatDeal(record);
 }
 
@@ -54,22 +35,46 @@ async function getDealsWithFilters(filters) {
     if (filters.state && deal.state !== filters.state) return false;
     if (filters.city && deal.city !== filters.city) return false;
 
-    if (filters.minBeds && !(Number(deal.bedCount) >= filters.minBeds)) return false;
-    if (filters.minBaths && !(Number(deal.bathCount) >= filters.minBaths)) return false;
+    if (
+      filters.minBeds !== undefined &&
+      !(Number(deal.bedCount) >= filters.minBeds)
+    )
+      return false;
+    if (
+      filters.minBaths !== undefined &&
+      !(Number(deal.bathCount) >= filters.minBaths)
+    )
+      return false;
 
-    if (filters.minEntryFee && !(deal.entryFee >= filters.minEntryFee)) return false;
-    if (filters.maxEntryFee && !(deal.entryFee <= filters.maxEntryFee)) return false;
+    if (
+      filters.minEntryFee !== undefined &&
+      !(deal.entryFee >= filters.minEntryFee)
+    )
+      return false;
+    if (
+      filters.maxEntryFee !== undefined &&
+      !(deal.entryFee <= filters.maxEntryFee)
+    )
+      return false;
 
     if (filters.furnished && deal.furnished !== filters.furnished) return false;
     if (filters.hasPool && deal.hasPool !== filters.hasPool) return false;
     if (filters.multiUnit && deal.multiUnit !== filters.multiUnit) return false;
 
-    if (filters.monthlyMin && !(deal.totalMonthlyPayment >= filters.monthlyMin)) return false;
-    if (filters.monthlyMax && !(deal.totalMonthlyPayment <= filters.monthlyMax)) return false;
+    if (
+      filters.monthlyMin !== undefined &&
+      !(deal.totalMonthlyPayment >= filters.monthlyMin)
+    )
+      return false;
+    if (
+      filters.monthlyMax !== undefined &&
+      !(deal.totalMonthlyPayment <= filters.monthlyMax)
+    )
+      return false;
 
     if (filters.exitStrategies && filters.exitStrategies.length > 0) {
       const hasMatch = filters.exitStrategies.some((strategy) =>
-        deal.exitStrategies.includes(strategy)
+        deal.exitStrategies.includes(strategy),
       );
       if (!hasMatch) return false;
     }
@@ -83,8 +88,14 @@ async function searchDeals(query) {
   const deals = await getCachedDeals();
 
   return deals.filter((deal) =>
-    [deal.address, deal.city, deal.state, deal.fullAddress, deal.zipCode, deal.dealType]
-      .some((field) => String(field).toLowerCase().includes(searchTerm))
+    [
+      deal.address,
+      deal.city,
+      deal.state,
+      deal.fullAddress,
+      deal.zipCode,
+      deal.dealType,
+    ].some((field) => String(field).toLowerCase().includes(searchTerm)),
   );
 }
 

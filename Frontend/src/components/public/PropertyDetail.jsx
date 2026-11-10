@@ -1,3 +1,4 @@
+import { CONTACT } from "./content";
 import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSavedDeals } from "../../hooks/useSavedDeals";
@@ -167,11 +168,23 @@ function LockedCard({ title, blurb, onGate }) {
     </div>
   );
 }
-function PublicPropertyDetail({ deal, loggedIn, onBack, onGate }) {
+function PublicPropertyDetail({
+  deal,
+  loggedIn,
+  onBack,
+  onGate,
+  matchError,
+  onRetryMatch,
+}) {
   const gallery = galleryFor(deal);
   const inv = buildInvestmentSections(deal);
   const [active, setActive] = useState(0);
-  const { saved: savedIds, toggle, error: saveError } = useSavedDeals();
+  const {
+    saved: savedIds,
+    toggle,
+    error: saveError,
+    retry: retrySaved,
+  } = useSavedDeals();
   const saved = savedIds.has(deal.id);
   const dt = dealTypeColors[deal.dealType] || { bg: sand, fg: muted };
   const onSave = () => {
@@ -413,14 +426,51 @@ function PublicPropertyDetail({ deal, loggedIn, onBack, onGate }) {
             </div>
             {saveError && (
               <p role="alert" className="text-red-700 text-sm">
-                {saveError}
+                {saveError}{" "}
+                <button className="underline min-h-11" onClick={retrySaved}>
+                  Retry saved deals
+                </button>
               </p>
             )}
             <div
               style={{ background: card, borderColor: line }}
               className="rounded-[1.5rem] border shadow-sm p-6"
             >
-              <h2 className="text-[17px] font-semibold">Your next step</h2>
+              <h2 className="text-[17px] font-semibold">
+                Interested in this property?
+              </h2>
+              <a
+                className="mt-4 flex justify-center rounded-full bg-brand text-white px-4 py-3 text-sm"
+                href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`Property inquiry: ${deal.name}`)}&body=${encodeURIComponent(`I'm interested in ${deal.name}, ${deal.location}.\nListing: ${window.location.origin}/deals/${deal.id}\nPlease contact me with the next steps.`)}`}
+              >
+                Ask about this property
+              </a>
+              <a
+                className="mt-3 block text-center underline min-h-11"
+                href={`tel:${CONTACT.phone.replace(/[^+\d]/g, "")}`}
+              >
+                Call our team
+              </a>
+              {loggedIn && deal.matchScore != null && (
+                <section aria-label="Your match score" className="mt-4 text-sm">
+                  <h3 className="font-semibold">
+                    {deal.matchScore}% match with your Buy Box
+                  </h3>
+                  <ul className="mt-2 space-y-2">
+                    {deal.matchReasons.map((reason) => (
+                      <li key={reason}>{reason}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+              {loggedIn && matchError && (
+                <p role="status" className="mt-4 text-sm">
+                  {matchError}{" "}
+                  <button className="underline min-h-11" onClick={onRetryMatch}>
+                    Retry score
+                  </button>
+                </p>
+              )}
               <p className="mt-2 text-sm" style={{ color: muted }}>
                 Set your investment criteria and explore opportunities that fit
                 your goals.

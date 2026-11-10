@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { getDealById } from "../services/api";
+import { getDealById, getMatchScore } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { usePublicSite } from "../components/public/PublicSiteContext";
 import { PublicPropertyDetail } from "../components/public/PropertyDetail";
@@ -8,7 +8,11 @@ const money = (n) => (n == null ? "—" : `$${Number(n).toLocaleString()}`);
 export default function DealDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, platformUser, syncing, syncError, emailVerified } = useAuth();
+  const [match, setMatch] = useState(null);
+  const [matchError, setMatchError] = useState("");
+  const [matchRetry, setMatchRetry] = useState(0);
+  const [retry, setRetry] = useState(0);
   const { onGate } = usePublicSite();
   const [deal, setDeal] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,9 +25,13 @@ export default function DealDetailPage() {
       .then((data) => {
         if (!cancelled) setDeal(data.deal);
       })
-      .catch(() => {
+      .catch((error) => {
         if (!cancelled)
-          setError("Unable to load this property. Please try again.");
+          setError(
+            error.status === 404
+              ? "This property is no longer available. It may have been sold or removed."
+              : "Unable to load this property. Please try again.",
+          );
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -31,7 +39,36 @@ export default function DealDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, retry]);
+  useEffect(() => {
+    let cancelled = false;
+    setMatch(null);
+    setMatchError("");
+    if (emailVerified && user && platformUser && !syncing && !syncError)
+      getMatchScore(id)
+        .then((data) => {
+          if (!cancelled) setMatch({ ...data, uid: user.uid });
+        })
+        .catch((error) => {
+          if (!cancelled)
+            setMatchError(
+              error.code === "BUY_BOX_REQUIRED"
+                ? "Set up your Buy Box to see a personalized match score."
+                : "Match score is temporarily unavailable.",
+            );
+        });
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    id,
+    user?.uid,
+    platformUser,
+    syncing,
+    syncError,
+    emailVerified,
+    matchRetry,
+  ]);
   if (loading)
     return (
       <div className="min-h-[60vh] grid place-items-center" role="status">
@@ -45,6 +82,12 @@ export default function DealDetailPage() {
         role="alert"
       >
         <p>{error || "Property not found."}</p>
+        <button
+          className="underline min-h-11"
+          onClick={() => setRetry((value) => value + 1)}
+        >
+          Try again
+        </button>
         <Link to="/deals" className="text-brand underline">
           Back to Buy Deals
         </Link>
@@ -67,11 +110,17 @@ export default function DealDetailPage() {
     beds: deal.bedCount || "—",
     baths: deal.bathCount || "—",
     sqft: "—",
-    matchScore: null,
+    matchScore:
+      user && match?.uid === user.uid && !syncing && !syncError
+        ? match.matchScore
+        : null,
+    matchReasons: match?.uid === user?.uid ? match?.matchReasons || [] : [],
   };
   return (
     <PublicPropertyDetail
       key={id}
+      matchError={matchError}
+      onRetryMatch={() => setMatchRetry((value) => value + 1)}
       deal={formatted}
       loggedIn={!!user}
       onBack={() => navigate("/deals")}

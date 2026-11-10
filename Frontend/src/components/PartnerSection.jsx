@@ -8,7 +8,7 @@ import {
   Network,
 } from "lucide-react";
 import { palette } from "./public/theme";
-import { PARTNER_BENEFITS } from "./public/content";
+import { CONTACT, PARTNER_BENEFITS } from "./public/content";
 import { SectionHead } from "./public/HomePrimitives";
 import { usePublicSite } from "./public/PublicSiteContext";
 const { sand, card, text, coral, blush, muted, line } = palette;
@@ -24,8 +24,8 @@ function PartnerSection() {
       className="scroll-mt-32 max-w-6xl mx-auto px-4 sm:px-6 py-14"
     >
       <SectionHead
-        eyebrow="Partner With NexKey"
-        title="A partnership designed around your success"
+        eyebrow="JV with NexKey"
+        title="Focus on creating deals and we will handle the rest!"
         center
       />
       <div className="mt-8 grid sm:grid-cols-2 gap-4">
@@ -59,17 +59,17 @@ function PartnerSection() {
         })}
       </div>
       <div className="mt-6 flex justify-center">
-        <button
-          onClick={onGate}
+        <a
+          href={`mailto:${CONTACT.email}?subject=Submit%20JV%20Deal`}
           style={{ background: coral }}
           className="group inline-flex items-center gap-2 text-white rounded-full px-7 py-3.5 text-[15px]"
         >
-          {loggedIn ? "My Buy Box" : "Become a Partner"}{" "}
+          Submit JV Deals{" "}
           <ArrowRight
             size={17}
             className="transition-transform group-hover:translate-x-1"
           />
-        </button>
+        </a>
       </div>
     </section>
   );

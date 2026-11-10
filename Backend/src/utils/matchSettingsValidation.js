@@ -5,6 +5,8 @@ const ALLOWED_TOP_LEVEL_KEYS = ["weights", "zipCode", "radiusMiles"];
 
 function validateMatchSettingsInput(data) {
   const errors = [];
+  if (!data || typeof data !== "object" || Array.isArray(data))
+    return { isValid: false, errors: ["Body must be an object"] };
 
   for (const key of Object.keys(data)) {
     if (!ALLOWED_TOP_LEVEL_KEYS.includes(key)) {
@@ -21,7 +23,12 @@ function validateMatchSettingsInput(data) {
           errors.push(`Unknown weight key: ${key}`);
           continue;
         }
-        if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+        if (
+          typeof value !== "number" ||
+          !Number.isFinite(value) ||
+          value < 0 ||
+          value > 50
+        ) {
           errors.push(`weights.${key} must be a non-negative number`);
         }
       }
@@ -35,7 +42,12 @@ function validateMatchSettingsInput(data) {
   }
 
   if (data.radiusMiles !== undefined && data.radiusMiles !== null) {
-    if (typeof data.radiusMiles !== "number" || !Number.isFinite(data.radiusMiles) || data.radiusMiles <= 0) {
+    if (
+      typeof data.radiusMiles !== "number" ||
+      !Number.isFinite(data.radiusMiles) ||
+      data.radiusMiles <= 0 ||
+      data.radiusMiles > 5000
+    ) {
       errors.push("radiusMiles must be a positive number");
     }
   }

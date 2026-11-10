@@ -31,7 +31,7 @@ function CTASection() {
           className="mt-4 text-[16px] max-w-xl mx-auto"
           style={{ color: "rgba(255,255,255,0.9)" }}
         >
-          Join 5,000+ investors sourcing vetted, off-market deals on NexKey.
+          Find the right deals with personalized support from search to closing.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button

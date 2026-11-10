@@ -7,7 +7,9 @@ const getDeals = async (req, res) => {
     // If search query provided, use search
     if (req.query.q) {
       const deals = await dealService.searchDeals(req.query.q);
-      return res.status(200).json({ deals: deals.map(toListDeal), count: deals.length });
+      return res
+        .status(200)
+        .json({ deals: deals.map(toListDeal), count: deals.length });
     }
 
     // Otherwise use structured filters
@@ -21,7 +23,9 @@ const getDeals = async (req, res) => {
     // Trim to the fields the list grid renders — the full records (used
     // internally for filtering) carry a lot of detail-only data that would
     // otherwise double the response size for no benefit here.
-    return res.status(200).json({ deals: deals.map(toListDeal), count: deals.length });
+    return res
+      .status(200)
+      .json({ deals: deals.map(toListDeal), count: deals.length });
   } catch (error) {
     console.error("Get deals error:", error);
     return res.status(500).json({ error: "Failed to fetch deals" });
@@ -33,13 +37,19 @@ const getDealById = async (req, res) => {
     const deal = await dealService.getDealById(req.params.id);
     // Matches the list endpoint: a deal that's sold, expired, or assigned
     // elsewhere shouldn't be viewable even via a direct/stale link.
-    if (deal.dealStatus !== "Available") {
+    if (!deal || deal.dealStatus !== "Available") {
       return res.status(404).json({ error: "Deal not found" });
     }
     return res.status(200).json({ deal });
   } catch (error) {
-    console.error("Get deal error:", error);
-    return res.status(404).json({ error: "Deal not found" });
+    if (error.statusCode === 404)
+      return res
+        .status(404)
+        .json({ error: "This property is no longer available" });
+    console.error("Get deal error:", error.message);
+    return res
+      .status(503)
+      .json({ error: "Property details are temporarily unavailable" });
   }
 };
 

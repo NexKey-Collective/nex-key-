@@ -27,11 +27,11 @@ function HowItWorksSection() {
         className="rounded-[2.5rem] p-8 md:p-12"
       >
         <SectionHead
-          eyebrow="How Partnership Works"
-          title="From sign-up to closing in three steps"
+          eyebrow="How it Works"
+          title="From your Buy Box to your next closing"
           center
         />
-        <div className="mt-10 grid md:grid-cols-3 gap-8">
+        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {STEPS.map((s) => (
             <div key={s.n} className="text-center">
               <span

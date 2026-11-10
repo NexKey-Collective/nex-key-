@@ -26,6 +26,7 @@ function WhoWeServeSection() {
       <SectionHead
         eyebrow="Who We Serve"
         title="Built for everyone in the deal"
+        sub="Seasoned investors and home buyers alike can benefit from our personalized service and processes to acquire properties. Wholesalers and connectors, this is your opportunity to collectively bring value!"
         center
       />
       <div className="mt-8 grid md:grid-cols-3 gap-4">

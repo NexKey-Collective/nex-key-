@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getBuyBox,
@@ -205,10 +206,19 @@ export default function MyBuyBoxPage() {
 
         {loadError && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-[14px] rounded-xl px-4 py-3 mb-6">
-            {loadError}
+            {loadError}{" "}
+            <button
+              className="underline min-h-11"
+              onClick={() => window.location.reload()}
+            >
+              Retry loading Buy Box
+            </button>
           </div>
         )}
 
+        <Link to="/deals" className="inline-flex underline min-h-11 mb-4">
+          View your matches
+        </Link>
         {/* Buy Box criteria */}
         <form
           onSubmit={handleBuyBoxSubmit}
@@ -217,6 +227,10 @@ export default function MyBuyBoxPage() {
           <h2 className="text-[20px] font-bold text-dark mb-6">
             Buy Box Criteria
           </h2>
+          <p className="mb-6 text-sm text-text-body">
+            Match scores use location, deal type, entry fee, bedrooms and
+            bathrooms. Your purchase price preference is saved for team review.
+          </p>
 
           <div className="grid sm:grid-cols-2 gap-5 mb-6">
             <label className="flex flex-col gap-1.5">
@@ -262,6 +276,7 @@ export default function MyBuyBoxPage() {
               <input
                 type="number"
                 min="0"
+                step="any"
                 placeholder="$"
                 value={buyBoxForm.purchasePriceMax}
                 onChange={(e) =>
@@ -281,6 +296,7 @@ export default function MyBuyBoxPage() {
               <input
                 type="number"
                 min="0"
+                step="any"
                 placeholder="$"
                 value={buyBoxForm.entryFeeMax}
                 onChange={(e) =>
@@ -312,6 +328,7 @@ export default function MyBuyBoxPage() {
               <input
                 type="number"
                 min="0"
+                step="0.5"
                 value={buyBoxForm.bathroomsMin}
                 onChange={(e) =>
                   setBuyBoxForm((p) => ({ ...p, bathroomsMin: e.target.value }))
@@ -332,6 +349,7 @@ export default function MyBuyBoxPage() {
                   <button
                     key={strategy}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => toggleStrategy(strategy)}
                     className={[
                       "px-4 py-2 rounded-full text-[13px] font-medium border transition-all",
@@ -348,15 +366,19 @@ export default function MyBuyBoxPage() {
           </div>
 
           {buyBoxMessage && (
-            <p className="text-[13px] text-green-600 mb-4">{buyBoxMessage}</p>
+            <p role="status" className="text-[13px] text-green-800 mb-4">
+              {buyBoxMessage}
+            </p>
           )}
           {buyBoxError && (
-            <p className="text-[13px] text-red-600 mb-4">{buyBoxError}</p>
+            <p role="alert" className="text-[13px] text-red-700 mb-4">
+              {buyBoxError}
+            </p>
           )}
 
           <button
             type="submit"
-            disabled={savingBuyBox}
+            disabled={savingBuyBox || !!loadError}
             className="bg-brand text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-brand-dark transition-all duration-200 active:scale-95 disabled:opacity-50"
           >
             {savingBuyBox ? "Saving..." : "Save Buy Box"}
@@ -384,6 +406,8 @@ export default function MyBuyBoxPage() {
               </span>
               <input
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]{5}"
                 placeholder="75201"
                 value={matchForm.zipCode}
                 onChange={(e) =>
@@ -399,7 +423,8 @@ export default function MyBuyBoxPage() {
               </span>
               <input
                 type="number"
-                min="0"
+                min="1"
+                max="5000"
                 placeholder="25"
                 value={matchForm.radiusMiles}
                 onChange={(e) =>
@@ -412,11 +437,15 @@ export default function MyBuyBoxPage() {
 
           <div className="flex flex-col gap-4 mb-8">
             {Object.keys(DEFAULT_WEIGHTS).map((key) => (
-              <div key={key} className="flex items-center gap-4">
-                <span className="text-[14px] text-text-body w-48 shrink-0">
+              <div
+                key={key}
+                className="flex flex-wrap sm:flex-nowrap items-center gap-3"
+              >
+                <span className="text-[14px] text-text-body w-full sm:w-48 shrink-0">
                   {WEIGHT_LABELS[key]}
                 </span>
                 <input
+                  aria-label={WEIGHT_LABELS[key]}
                   type="range"
                   min="0"
                   max="50"
@@ -437,15 +466,19 @@ export default function MyBuyBoxPage() {
           </div>
 
           {matchMessage && (
-            <p className="text-[13px] text-green-600 mb-4">{matchMessage}</p>
+            <p role="status" className="text-[13px] text-green-800 mb-4">
+              {matchMessage}
+            </p>
           )}
           {matchError && (
-            <p className="text-[13px] text-red-600 mb-4">{matchError}</p>
+            <p role="alert" className="text-[13px] text-red-700 mb-4">
+              {matchError}
+            </p>
           )}
 
           <button
             type="submit"
-            disabled={savingMatch}
+            disabled={savingMatch || !!loadError}
             className="bg-brand text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-brand-dark transition-all duration-200 active:scale-95 disabled:opacity-50"
           >
             {savingMatch ? "Saving..." : "Save Match Settings"}

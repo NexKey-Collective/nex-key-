@@ -15,6 +15,7 @@ const getMatchedDeals = async (req, res) => {
       return res.status(400).json({
         error: "User has not set up Buy Box yet",
         matches: [],
+        code: "BUY_BOX_REQUIRED",
         message: "Please set up your investment preferences first",
       });
     }
@@ -34,7 +35,11 @@ const getMatchedDeals = async (req, res) => {
 
     // Calculate scores for each deal
     const scoredDeals = allDeals.map((deal) => {
-      const { score, reasons } = matchingService.evaluateMatch(deal, scoringBuyBox, weights);
+      const { score, reasons } = matchingService.evaluateMatch(
+        deal,
+        scoringBuyBox,
+        weights,
+      );
 
       return {
         ...deal,
@@ -49,7 +54,7 @@ const getMatchedDeals = async (req, res) => {
     const isNewMatchByDealId = await matchPersistenceService.syncMatchRecords(
       userId,
       scoredDeals,
-      lastViewedAt
+      lastViewedAt,
     );
     await matchPersistenceService.markMatchesViewed(userId);
 
@@ -68,7 +73,7 @@ const getMatchedDeals = async (req, res) => {
         matchedDeals.length > 0
           ? Math.round(
               matchedDeals.reduce((sum, d) => sum + d.matchScore, 0) /
-                matchedDeals.length
+                matchedDeals.length,
             )
           : 0,
     };
@@ -76,6 +81,14 @@ const getMatchedDeals = async (req, res) => {
     return res.status(200).json({
       buyBox,
       matches: matchedDeals,
+      scores: scoredDeals.map(
+        ({ id, matchScore, matchReasons, isMatched }) => ({
+          id,
+          matchScore,
+          matchReasons,
+          isMatched,
+        }),
+      ),
       count: matchedDeals.length,
       statistics,
     });
@@ -96,6 +109,7 @@ const getMatchScore = async (req, res) => {
     if (!buyBox) {
       return res.status(400).json({
         error: "User has not set up Buy Box yet",
+        code: "BUY_BOX_REQUIRED",
         message: "Please set up your investment preferences first",
       });
     }
@@ -111,12 +125,16 @@ const getMatchScore = async (req, res) => {
     // Get specific deal
     const deal = await dealService.getDealById(dealId);
 
-    if (!deal) {
+    if (!deal || deal.dealStatus !== "Available") {
       return res.status(404).json({ error: "Deal not found" });
     }
 
     // Calculate score and reasons
-    const { score, reasons } = matchingService.evaluateMatch(deal, scoringBuyBox, weights);
+    const { score, reasons } = matchingService.evaluateMatch(
+      deal,
+      scoringBuyBox,
+      weights,
+    );
 
     return res.status(200).json({
       deal,

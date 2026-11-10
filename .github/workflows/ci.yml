@@ -1,0 +1,32 @@
+name: Production checks
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            Backend/package-lock.json
+            Frontend/package-lock.json
+      - run: npm ci --prefix Backend
+      - run: npm ci --prefix Frontend
+      - run: npm audit --prefix Backend --audit-level=moderate
+      - run: npm audit --prefix Frontend --audit-level=moderate
+      - run: npm test --prefix Backend
+      - run: npm test --prefix Frontend
+      - run: npm run build --prefix Frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: Frontend
+      - run: npm run test:e2e --prefix Frontend
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: Frontend/test-results/

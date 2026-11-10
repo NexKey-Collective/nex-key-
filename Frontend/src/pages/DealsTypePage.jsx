@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import BuyDealsBrowser from "../components/deals/BuyDealsBrowser";
 
 import { getDeals } from "../services/api";
+import { useMatches } from "../hooks/useMatches";
 import { useAuth } from "../context/AuthContext";
 
 const CREATIVE_SUBTYPES = ["Subto", "Hybrid", "Seller Finance"];
@@ -18,6 +19,7 @@ const DEFAULT_PANEL_FILTERS = {
 
 export default function DealsTypePage() {
   const { user } = useAuth();
+  const matches = useMatches();
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -61,20 +63,24 @@ export default function DealsTypePage() {
 
         // Client-side: Creative tab
         if (activeFilter === "Creative" && !searchQuery.trim()) {
-          results = results.filter((d) => CREATIVE_SUBTYPES.includes(d.dealType));
+          results = results.filter((d) =>
+            CREATIVE_SUBTYPES.includes(d.dealType),
+          );
         }
 
         // Client-side: filter by deal types from panel
         if (filters.dealTypes && filters.dealTypes.length > 0) {
           results = results.filter((deal) =>
-            filters.dealTypes.includes(deal.dealType)
+            filters.dealTypes.includes(deal.dealType),
           );
         }
 
         // Client-side: filter by exit strategies
         if (filters.exitStrategies && filters.exitStrategies.length > 0) {
           results = results.filter((deal) =>
-            deal.exitStrategies?.some((es) => filters.exitStrategies.includes(es))
+            deal.exitStrategies?.some((es) =>
+              filters.exitStrategies.includes(es),
+            ),
           );
         }
 
@@ -82,14 +88,25 @@ export default function DealsTypePage() {
         if (filters.monthlyMin > 0 || filters.monthlyMax < 5000) {
           results = results.filter((deal) => {
             if (!deal.totalMonthlyPayment) return false;
-            if (filters.monthlyMin && deal.totalMonthlyPayment < filters.monthlyMin) return false;
-            if (filters.monthlyMax && deal.totalMonthlyPayment > filters.monthlyMax) return false;
+            if (
+              filters.monthlyMin &&
+              deal.totalMonthlyPayment < filters.monthlyMin
+            )
+              return false;
+            if (
+              filters.monthlyMax &&
+              deal.totalMonthlyPayment > filters.monthlyMax
+            )
+              return false;
             return true;
           });
         }
 
         if (activeFilter !== "All" && activeFilter !== "Creative") {
-          results = results.filter((deal) => deal.dealType?.toLowerCase() === activeFilter.toLowerCase());
+          results = results.filter(
+            (deal) =>
+              deal.dealType?.toLowerCase() === activeFilter.toLowerCase(),
+          );
         }
         if (!cancelled) setDeals(results);
       } catch (err) {
@@ -101,7 +118,10 @@ export default function DealsTypePage() {
     };
 
     const timer = setTimeout(fetchDeals, searchQuery ? 400 : 0);
-    return () => { cancelled = true; clearTimeout(timer); };
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [activeFilter, searchQuery, inlineFilters, appliedPanelFilters, retry]);
 
   const handleApplyPanel = (filters) => {
@@ -111,6 +131,7 @@ export default function DealsTypePage() {
   const formattedDeals = useMemo(() => {
     return deals.map((deal) => ({
       id: deal.id,
+      matchScore: matches.scores[deal.id]?.matchScore ?? null,
       image: deal.listingImageUrl || "",
       amount: deal.entryFee == null ? null : Number(deal.entryFee),
       badge: deal.dealType || null,
@@ -126,22 +147,32 @@ export default function DealsTypePage() {
       beds: deal.bedCount || "-",
       baths: deal.bathCount || "-",
       sqft: "-",
-      interestRate: deal.rateLoan == null ? "—" : `${(deal.rateLoan * 100).toFixed(2)}%`,
+      interestRate:
+        deal.rateLoan == null ? "—" : `${(deal.rateLoan * 100).toFixed(2)}%`,
       statLabel: "Monthly",
       statValue: deal.totalMonthlyPayment
         ? `$${deal.totalMonthlyPayment.toLocaleString()}`
         : "-",
     }));
-  }, [deals]);
+  }, [deals, matches.scores]);
 
   return (
     <BuyDealsBrowser
-      deals={formattedDeals} loading={loading} error={error} user={user}
-      activeFilter={activeFilter} onFilterChange={setActiveFilter}
-      searchQuery={searchQuery} onSearchChange={setSearchQuery}
-      panelFilters={panelFilters} onPanelFiltersChange={setPanelFilters}
-      onApplyPanel={handleApplyPanel} onRetry={() => setRetry((value) => value + 1)}
-      inlineFilters={inlineFilters} onInlineFilters={setInlineFilters}
+      matching={matches}
+      deals={formattedDeals}
+      loading={loading}
+      error={error}
+      user={user}
+      activeFilter={activeFilter}
+      onFilterChange={setActiveFilter}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      panelFilters={panelFilters}
+      onPanelFiltersChange={setPanelFilters}
+      onApplyPanel={handleApplyPanel}
+      onRetry={() => setRetry((value) => value + 1)}
+      inlineFilters={inlineFilters}
+      onInlineFilters={setInlineFilters}
     />
   );
 }

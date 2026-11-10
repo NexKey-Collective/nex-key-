@@ -31,10 +31,10 @@ function formatBuyBox(record) {
     preferredCities: record.fields[BuyBoxFields.PREFERRED_CITIES] || "",
     buyingStrategies: record.fields[BuyBoxFields.BUYING_STRATEGIES] || "",
     interestedDealType: record.fields[BuyBoxFields.INTERESTED_DEAL_TYPE] || "",
-    purchasePriceMax: record.fields[BuyBoxFields.PURCHASE_PRICE_MAX] || null,
-    entryFeeMax: record.fields[BuyBoxFields.ENTRY_FEE_MAX] || null,
-    bedroomsMin: record.fields[BuyBoxFields.BEDROOMS_MIN] || null,
-    bathroomsMin: record.fields[BuyBoxFields.BATHROOMS_MIN] || null,
+    purchasePriceMax: record.fields[BuyBoxFields.PURCHASE_PRICE_MAX] ?? null,
+    entryFeeMax: record.fields[BuyBoxFields.ENTRY_FEE_MAX] ?? null,
+    bedroomsMin: record.fields[BuyBoxFields.BEDROOMS_MIN] ?? null,
+    bathroomsMin: record.fields[BuyBoxFields.BATHROOMS_MIN] ?? null,
     buyBoxStatus: record.fields[BuyBoxFields.BUY_BOX_STATUS] || "",
     buyerStatus: record.fields[BuyBoxFields.BUYER_STATUS] || "",
     contactSource: record.fields[BuyBoxFields.CONTACT_SOURCE] || "",
@@ -78,21 +78,31 @@ function mapGhlPayload(payload) {
     [BuyBoxFields.PREFERRED_CITIES]: Array.isArray(payload["Preferred Cities"])
       ? payload["Preferred Cities"].join(", ")
       : payload["Preferred Cities"] || "",
-    [BuyBoxFields.BUYING_STRATEGIES]: Array.isArray(payload["Buying Strategies"])
+    [BuyBoxFields.BUYING_STRATEGIES]: Array.isArray(
+      payload["Buying Strategies"],
+    )
       ? payload["Buying Strategies"].join(", ")
       : payload["Buying Strategies"] || "",
-    [BuyBoxFields.PURCHASE_PRICE_MAX]: parseFloat(payload["Purchase Price (Max)"]) || null,
-    [BuyBoxFields.ENTRY_FEE_MAX]: parseFloat(payload["Entry Fee (Max)"]) || null,
-    [BuyBoxFields.BEDROOMS_MIN]: parseInt(payload["Bedrooms (Min)"], 10) || null,
-    [BuyBoxFields.BATHROOMS_MIN]: parseInt(payload["Bathrooms (Min)"], 10) || null,
+    [BuyBoxFields.PURCHASE_PRICE_MAX]:
+      parseFloat(payload["Purchase Price (Max)"]) || null,
+    [BuyBoxFields.ENTRY_FEE_MAX]:
+      parseFloat(payload["Entry Fee (Max)"]) || null,
+    [BuyBoxFields.BEDROOMS_MIN]:
+      parseInt(payload["Bedrooms (Min)"], 10) || null,
+    [BuyBoxFields.BATHROOMS_MIN]:
+      parseFloat(payload["Bathrooms (Min)"]) || null,
     [BuyBoxFields.CONTACT_SOURCE]: payload.contact_source || "",
-    [BuyBoxFields.SUBMITTED_AT]: payload["Buy Box Submitted At "] || new Date().toISOString().split("T")[0],
+    [BuyBoxFields.SUBMITTED_AT]:
+      payload["Buy Box Submitted At "] ||
+      new Date().toISOString().split("T")[0],
   };
 
   // Only include single select fields if they have a value
   // Only include fields if they have a value
   if (payload["Interested Deal Type"]) {
-    fields[BuyBoxFields.INTERESTED_DEAL_TYPE] = Array.isArray(payload["Interested Deal Type"])
+    fields[BuyBoxFields.INTERESTED_DEAL_TYPE] = Array.isArray(
+      payload["Interested Deal Type"],
+    )
       ? payload["Interested Deal Type"].join(", ")
       : payload["Interested Deal Type"];
   }
@@ -108,4 +118,10 @@ function mapGhlPayload(payload) {
   return fields;
 }
 
-module.exports = { BUYBOX_TABLE, BuyBoxFields, formatBuyBox, mapGhlPayload, normalizeListFields };
+module.exports = {
+  BUYBOX_TABLE,
+  BuyBoxFields,
+  formatBuyBox,
+  mapGhlPayload,
+  normalizeListFields,
+};

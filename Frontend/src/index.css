@@ -81,3 +81,6 @@
     animation: none !important;
   }
 }
+
+:where(a, button, input, select, textarea):focus-visible { outline: 3px solid #c52d38; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
